@@ -69,7 +69,10 @@
       "Bash(.huskypre-commit)",
       "Bash(..huskypre-commit)",
       "Bash(git config:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run watch:*)",
+      "Bash(gh run view:*)"
     ],
     "deny": [],
     "ask": []

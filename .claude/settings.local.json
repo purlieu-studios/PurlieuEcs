@@ -73,7 +73,8 @@
       "Bash(gh run list:*)",
       "Bash(gh run watch:*)",
       "Bash(gh run view:*)",
-      "Bash(git switch:*)"
+      "Bash(git switch:*)",
+      "Bash(gh run view:*)"
     ],
     "deny": [],
     "ask": []

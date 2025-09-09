@@ -1,0 +1,148 @@
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+    inputs:
+      comparison_branch:
+        description: 'Branch to compare against'
+        required: false
+        default: 'main'
+      benchmark_filter:
+        description: 'Benchmark filter pattern (e.g., "*Entity*")'
+        required: false
+        default: '*'
+  schedule:
+    # Run benchmarks weekly on Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+      fail-fast: false
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build Benchmark project
+      run: dotnet build src/Purlieu.Ecs.Benchmark/Purlieu.Ecs.Benchmark.csproj --configuration Release
+
+    - name: Run benchmarks
+      run: |
+        dotnet run --project src/Purlieu.Ecs.Benchmark/Purlieu.Ecs.Benchmark.csproj \
+          --configuration Release \
+          -- \
+          --runtimes net8.0 \
+          --filter "${{ github.event.inputs.benchmark_filter || '*' }}" \
+          --exporters json html markdown \
+          --artifacts ./BenchmarkDotNet.Artifacts
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results-${{ matrix.os }}
+        path: BenchmarkDotNet.Artifacts/**/*
+
+    - name: Store benchmark results for comparison
+      if: github.ref == 'refs/heads/main'
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: PurlieuECS Benchmarks (${{ matrix.os }})
+        tool: 'benchmarkdotnet'
+        output-file-path: BenchmarkDotNet.Artifacts/results/Purlieu.Ecs.Benchmark-report-full.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        comment-on-alert: true
+        alert-threshold: '150%'
+        fail-on-alert: true
+        benchmark-data-dir-path: 'benchmarks/${{ matrix.os }}'
+
+  benchmark-comparison:
+    name: Compare Benchmarks
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.comparison_branch
+
+    steps:
+    - name: Checkout current branch
+      uses: actions/checkout@v4
+      with:
+        path: current
+
+    - name: Checkout comparison branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.comparison_branch }}
+        path: comparison
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Run benchmarks on current branch
+      working-directory: current
+      run: |
+        dotnet restore
+        dotnet build src/Purlieu.Ecs.Benchmark/Purlieu.Ecs.Benchmark.csproj --configuration Release
+        dotnet run --project src/Purlieu.Ecs.Benchmark/Purlieu.Ecs.Benchmark.csproj \
+          --configuration Release \
+          -- \
+          --job short \
+          --runtimes net8.0 \
+          --filter "${{ github.event.inputs.benchmark_filter || '*' }}" \
+          --exporters json \
+          --artifacts ./BenchmarkDotNet.Artifacts
+
+    - name: Run benchmarks on comparison branch
+      working-directory: comparison
+      run: |
+        dotnet restore
+        dotnet build src/Purlieu.Ecs.Benchmark/Purlieu.Ecs.Benchmark.csproj --configuration Release
+        dotnet run --project src/Purlieu.Ecs.Benchmark/Purlieu.Ecs.Benchmark.csproj \
+          --configuration Release \
+          -- \
+          --job short \
+          --runtimes net8.0 \
+          --filter "${{ github.event.inputs.benchmark_filter || '*' }}" \
+          --exporters json \
+          --artifacts ./BenchmarkDotNet.Artifacts
+
+    - name: Compare results
+      run: |
+        echo "## Benchmark Comparison" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Comparing current branch against ${{ github.event.inputs.comparison_branch }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Note: You would need to implement actual comparison logic here
+        # This is a placeholder for the comparison report
+        echo "### Results" >> $GITHUB_STEP_SUMMARY
+        echo "Current branch results: ./current/BenchmarkDotNet.Artifacts/" >> $GITHUB_STEP_SUMMARY
+        echo "Comparison branch results: ./comparison/BenchmarkDotNet.Artifacts/" >> $GITHUB_STEP_SUMMARY
+
+    - name: Upload comparison results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-comparison
+        path: |
+          current/BenchmarkDotNet.Artifacts/**/*
+          comparison/BenchmarkDotNet.Artifacts/**/*

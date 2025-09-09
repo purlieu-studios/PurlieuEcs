@@ -280,12 +280,12 @@ public sealed class World
     public EventChannel<T> Events<T>(int capacity = 1024) where T : struct
     {
         var eventType = typeof(T);
-        
+
         if (!_eventChannels.TryGetValue(eventType, out var channel))
         {
             channel = new EventChannel<T>(capacity);
             _eventChannels[eventType] = channel;
-            
+
             // Check if this event type has OneFrame attribute
             if (eventType.GetCustomAttribute<OneFrameAttribute>() != null)
             {
@@ -320,7 +320,7 @@ public sealed class World
     public IReadOnlyDictionary<Type, object> GetEventChannelStats()
     {
         var stats = new Dictionary<Type, object>();
-        
+
         foreach (var kvp in _eventChannels)
         {
             // Use reflection to call GetStats() on the typed channel

@@ -28,14 +28,14 @@ public class WorldEventTests
 
         // Assert - Same type returns same channel
         channel1.Should().BeSameAs(channel2);
-        
+
         // Assert - Different types return different channels
         channel1.Should().NotBeSameAs(channel3);
 
         // Assert - Channels have correct properties
         channel1.Capacity.Should().Be(1024); // Default capacity
         channel1.IsEmpty.Should().BeTrue();
-        
+
         _world.EventChannelCount.Should().Be(2); // Two different event types
     }
 
@@ -160,7 +160,7 @@ public class WorldEventTests
         for (int run = 0; run < 5; run++)
         {
             var world = new World();
-            
+
             // Create channels in consistent order
             var channel1 = world.Events<WorldTestEvent>();
             var channel2 = world.Events<AnotherWorldTestEvent>();
@@ -229,7 +229,7 @@ public struct WorldTestEvent
     public string Message;
 }
 
-public struct AnotherWorldTestEvent  
+public struct AnotherWorldTestEvent
 {
     public int Value;
 }

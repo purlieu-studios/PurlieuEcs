@@ -40,7 +40,7 @@ public class EventChannelAllocationTests
     {
         // Arrange
         var channel = new EventChannel<TestEvent>(1000);
-        
+
         // Pre-populate channel
         for (int i = 0; i < 500; i++)
         {
@@ -50,7 +50,7 @@ public class EventChannelAllocationTests
         // Warm up
         var consumeCount = 0;
         channel.ConsumeAll(evt => consumeCount++);
-        
+
         // Repopulate
         for (int i = 0; i < 500; i++)
         {
@@ -61,7 +61,7 @@ public class EventChannelAllocationTests
         var startMemory = GC.GetTotalMemory(true);
 
         consumeCount = 0;
-        channel.ConsumeAll(evt => 
+        channel.ConsumeAll(evt =>
         {
             consumeCount++;
             // Do minimal work to prevent optimization
@@ -81,7 +81,7 @@ public class EventChannelAllocationTests
     {
         // Arrange
         var channel = new EventChannel<TestEvent>(100);
-        
+
         // Pre-populate
         for (int i = 0; i < 50; i++)
         {
@@ -96,7 +96,7 @@ public class EventChannelAllocationTests
         {
             channel.TryPeek(out var peekedEvent);
             _ = peekedEvent.Id; // Use the result
-            
+
             if (i % 2 == 0 && channel.TryConsume(out var consumedEvent))
             {
                 _ = consumedEvent.Message; // Use the result
@@ -144,7 +144,7 @@ public class EventChannelAllocationTests
     {
         // Arrange
         var channel = new EventChannel<TestEvent>(1000);
-        
+
         // Populate with some events
         for (int i = 0; i < 100; i++)
         {

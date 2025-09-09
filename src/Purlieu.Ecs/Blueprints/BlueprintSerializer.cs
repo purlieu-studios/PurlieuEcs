@@ -64,7 +64,7 @@ public static class BlueprintSerializer
             // Use reflection to call the generic With method
             var withMethod = typeof(EntityBlueprint).GetMethod("With");
             var genericWithMethod = withMethod!.MakeGenericMethod(componentType);
-            blueprint = (EntityBlueprint)genericWithMethod.Invoke(blueprint, new[] { value })!
+            blueprint = (EntityBlueprint)genericWithMethod.Invoke(blueprint, new[] { value })!;
         }
 
         return blueprint;
@@ -130,7 +130,7 @@ public static class BlueprintSerializer
             // Use reflection to call the generic With method
             var withMethod = typeof(EntityBlueprint).GetMethod("With");
             var genericWithMethod = withMethod!.MakeGenericMethod(componentType);
-            blueprint = (EntityBlueprint)genericWithMethod.Invoke(blueprint, new[] { value })!
+            blueprint = (EntityBlueprint)genericWithMethod.Invoke(blueprint, new[] { value })!;
         }
 
         return blueprint;

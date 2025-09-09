@@ -1,13 +1,13 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Purlieu.Ecs.Blueprints;
 using Purlieu.Ecs.Core;
 
 namespace Purlieu.Ecs.Tests.Blueprints;
 
-[TestClass]
+[TestFixture]
 public class BlueprintSerializationTests
 {
     private struct SerializablePosition
@@ -28,7 +28,7 @@ public class BlueprintSerializationTests
 
     private string _tempDir;
 
-    [TestInitialize]
+    [SetUp]
     public void Setup()
     {
         ComponentTypeRegistry.Reset();
@@ -36,7 +36,7 @@ public class BlueprintSerializationTests
         Directory.CreateDirectory(_tempDir);
     }
 
-    [TestCleanup]
+    [TearDown]
     public void Cleanup()
     {
         if (Directory.Exists(_tempDir))
@@ -45,7 +45,7 @@ public class BlueprintSerializationTests
         }
     }
 
-    [TestMethod]
+    [Test]
     public void SNAP_Serialization_EmptyBlueprint_RoundTrip()
     {
         var original = EntityBlueprint.Empty;
@@ -57,7 +57,7 @@ public class BlueprintSerializationTests
         Assert.IsTrue(deserialized.Signature.IsEmpty);
     }
 
-    [TestMethod]
+    [Test]
     public void SNAP_Serialization_SingleComponent_RoundTrip()
     {
         var original = EntityBlueprint.Empty
@@ -74,7 +74,7 @@ public class BlueprintSerializationTests
         Assert.AreEqual(200, pos.Y);
     }
 
-    [TestMethod]
+    [Test]
     public void SNAP_Serialization_MultipleComponents_RoundTrip()
     {
         var original = EntityBlueprint.Empty
@@ -99,7 +99,7 @@ public class BlueprintSerializationTests
         Assert.AreEqual(-2.5f, vel.VY, 0.001f);
     }
 
-    [TestMethod]
+    [Test]
     public void SNAP_BinarySerializer_RoundTrip()
     {
         var original = EntityBlueprint.Empty
@@ -122,7 +122,7 @@ public class BlueprintSerializationTests
         Assert.AreEqual(12.34f, vel.VY, 0.001f);
     }
 
-    [TestMethod]
+    [Test]
     public void SNAP_FileOperations_SaveAndLoad_WorksCorrectly()
     {
         var original = EntityBlueprint.Empty
@@ -143,7 +143,7 @@ public class BlueprintSerializationTests
         Assert.AreEqual(888, pos.Y);
     }
 
-    [TestMethod]
+    [Test]
     public void SNAP_BinaryFileOperations_SaveAndLoad_WorksCorrectly()
     {
         var original = EntityBlueprint.Empty
@@ -170,39 +170,35 @@ public class BlueprintSerializationTests
         Assert.AreEqual(4.56f, vel.VY, 0.001f);
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(FileNotFoundException))]
+    [Test]
     public void SNAP_LoadFromFile_NonExistentFile_ThrowsException()
     {
         var nonExistentPath = Path.Combine(_tempDir, "does_not_exist.json");
-        BlueprintSerializer.LoadFromFile(nonExistentPath);
+        Assert.Throws<FileNotFoundException>(() => BlueprintSerializer.LoadFromFile(nonExistentPath));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(FileNotFoundException))]
+    [Test]
     public void SNAP_LoadFromBinaryFile_NonExistentFile_ThrowsException()
     {
         var nonExistentPath = Path.Combine(_tempDir, "does_not_exist.bin");
-        BlueprintSerializer.LoadFromBinaryFile(nonExistentPath);
+        Assert.Throws<FileNotFoundException>(() => BlueprintSerializer.LoadFromBinaryFile(nonExistentPath));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
+    [Test]
     public void SNAP_DeserializeFromJson_InvalidJson_ThrowsException()
     {
         var invalidJson = "{ invalid json }";
-        BlueprintSerializer.DeserializeFromJson(invalidJson);
+        Assert.Throws<InvalidOperationException>(() => BlueprintSerializer.DeserializeFromJson(invalidJson));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
+    [Test]
     public void SNAP_DeserializeFromBinary_InvalidVersion_ThrowsException()
     {
         var invalidBinary = new byte[] { 99, 0, 0, 0, 0 }; // Version 99
-        BlueprintSerializer.DeserializeFromBinary(invalidBinary);
+        Assert.Throws<InvalidOperationException>(() => BlueprintSerializer.DeserializeFromBinary(invalidBinary));
     }
 
-    [TestMethod]
+    [Test]
     public void SNAP_Serialization_PreservesSignatures()
     {
         var original = EntityBlueprint.Empty

@@ -1,13 +1,13 @@
 using System;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Purlieu.Ecs.Blueprints;
 using Purlieu.Ecs.Core;
 
 namespace Purlieu.Ecs.Tests.Blueprints;
 
-[TestClass]
+[TestFixture]
 public class BlueprintRegistryTests
 {
     private struct TestComponent
@@ -19,7 +19,7 @@ public class BlueprintRegistryTests
     private string _tempDir;
     private BlueprintRegistry _registry;
 
-    [TestInitialize]
+    [SetUp]
     public void Setup()
     {
         ComponentTypeRegistry.Reset();
@@ -28,7 +28,7 @@ public class BlueprintRegistryTests
         _registry = new BlueprintRegistry();
     }
 
-    [TestCleanup]
+    [TearDown]
     public void Cleanup()
     {
         if (Directory.Exists(_tempDir))
@@ -37,7 +37,7 @@ public class BlueprintRegistryTests
         }
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_RegisterAndGet_WorksCorrectly()
     {
         var blueprint = EntityBlueprint.Empty.With(new TestComponent(42));
@@ -52,7 +52,7 @@ public class BlueprintRegistryTests
         Assert.AreEqual(42, component.Value);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_Contains_ReturnsCorrectValue()
     {
         var blueprint = EntityBlueprint.Empty.With(new TestComponent(123));
@@ -63,7 +63,7 @@ public class BlueprintRegistryTests
         Assert.IsTrue(_registry.Contains("TestBlueprint"));
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_TryGet_ReturnsCorrectValue()
     {
         var blueprint = EntityBlueprint.Empty.With(new TestComponent(456));
@@ -76,7 +76,7 @@ public class BlueprintRegistryTests
         Assert.AreEqual(1, found.ComponentCount);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_Remove_WorksCorrectly()
     {
         var blueprint = EntityBlueprint.Empty.With(new TestComponent(789));
@@ -92,7 +92,7 @@ public class BlueprintRegistryTests
         Assert.IsFalse(removedAgain);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_Clear_RemovesAllBlueprints()
     {
         _registry.Register("Blueprint1", EntityBlueprint.Empty);
@@ -108,7 +108,7 @@ public class BlueprintRegistryTests
         Assert.AreEqual(0, _registry.GetNames().Count());
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_GetNames_ReturnsAllNames()
     {
         _registry.Register("First", EntityBlueprint.Empty);
@@ -123,7 +123,7 @@ public class BlueprintRegistryTests
         CollectionAssert.Contains(names, "Third");
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_RegisterFromFile_LoadsLazily()
     {
         var blueprint = EntityBlueprint.Empty.With(new TestComponent(999));
@@ -141,7 +141,7 @@ public class BlueprintRegistryTests
         Assert.AreEqual(999, component.Value);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_RegisterFromFile_CachesAfterFirstLoad()
     {
         var blueprint = EntityBlueprint.Empty.With(new TestComponent(555));
@@ -158,7 +158,7 @@ public class BlueprintRegistryTests
         Assert.AreEqual(first.Signature, second.Signature);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_PreloadAll_LoadsAllFileBasedBlueprints()
     {
         var blueprint1 = EntityBlueprint.Empty.With(new TestComponent(111));
@@ -180,7 +180,7 @@ public class BlueprintRegistryTests
         Assert.AreEqual(2, stats.FileBasedCount);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_Save_UpdatesFile()
     {
         var originalBlueprint = EntityBlueprint.Empty.With(new TestComponent(100));
@@ -202,7 +202,7 @@ public class BlueprintRegistryTests
         Assert.AreEqual(200, component.Value);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Registry_GetStats_ReturnsCorrectStats()
     {
         _registry.Register("InMemory", EntityBlueprint.Empty);
@@ -218,44 +218,38 @@ public class BlueprintRegistryTests
         Assert.AreEqual(2, stats.TotalCount);
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [Test]
     public void IT_Registry_RegisterNullName_ThrowsException()
     {
-        _registry.Register(null, EntityBlueprint.Empty);
+        Assert.Throws<ArgumentException>(() => _registry.Register(null, EntityBlueprint.Empty));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [Test]
     public void IT_Registry_RegisterEmptyName_ThrowsException()
     {
-        _registry.Register("", EntityBlueprint.Empty);
+        Assert.Throws<ArgumentException>(() => _registry.Register("", EntityBlueprint.Empty));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
+    [Test]
     public void IT_Registry_RegisterNullBlueprint_ThrowsException()
     {
-        _registry.Register("Test", null);
+        Assert.Throws<ArgumentNullException>(() => _registry.Register("Test", null));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(FileNotFoundException))]
+    [Test]
     public void IT_Registry_RegisterFromNonExistentFile_ThrowsException()
     {
         var nonExistentPath = Path.Combine(_tempDir, "does_not_exist.json");
-        _registry.RegisterFromFile("Test", nonExistentPath);
+        Assert.Throws<FileNotFoundException>(() => _registry.RegisterFromFile("Test", nonExistentPath));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [Test]
     public void IT_Registry_GetNonExistentBlueprint_ThrowsException()
     {
-        _registry.Get("DoesNotExist");
+        Assert.Throws<ArgumentException>(() => _registry.Get("DoesNotExist"));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [Test]
     public void IT_Registry_SaveNonCachedBlueprint_ThrowsException()
     {
         var filePath = Path.Combine(_tempDir, "not_cached.json");
@@ -263,6 +257,6 @@ public class BlueprintRegistryTests
         _registry.RegisterFromFile("NotCached", filePath);
         
         // Try to save without loading first
-        _registry.Save("NotCached");
+        Assert.Throws<ArgumentException>(() => _registry.Save("NotCached"));
     }
 }

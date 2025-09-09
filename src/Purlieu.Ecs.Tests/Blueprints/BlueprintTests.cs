@@ -2,13 +2,13 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Purlieu.Ecs.Blueprints;
 using Purlieu.Ecs.Core;
 
 namespace Purlieu.Ecs.Tests.Blueprints;
 
-[TestClass]
+[TestFixture]
 public class BlueprintTests
 {
     private struct TestPosition
@@ -25,13 +25,13 @@ public class BlueprintTests
 
     private struct TestTag { }
 
-    [TestInitialize]
+    [SetUp]
     public void Setup()
     {
         ComponentTypeRegistry.Reset();
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Blueprint_EmptyBlueprint_CreatesCorrectly()
     {
         var blueprint = EntityBlueprint.Empty;
@@ -41,7 +41,7 @@ public class BlueprintTests
         Assert.AreEqual(0, blueprint.Components.Count);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Blueprint_WithComponent_AddsComponent()
     {
         var blueprint = EntityBlueprint.Empty
@@ -56,7 +56,7 @@ public class BlueprintTests
         Assert.AreEqual(20, pos.Y);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Blueprint_MultipleComponents_AddsAll()
     {
         var blueprint = EntityBlueprint.Empty
@@ -78,7 +78,7 @@ public class BlueprintTests
         Assert.AreEqual(-2.0f, vel.VY, 0.001f);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Blueprint_WithoutComponent_RemovesComponent()
     {
         var blueprint = EntityBlueprint.Empty
@@ -91,7 +91,7 @@ public class BlueprintTests
         Assert.IsTrue(blueprint.Has<TestVelocity>());
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Blueprint_TryGet_ReturnsCorrectValue()
     {
         var blueprint = EntityBlueprint.Empty
@@ -105,15 +105,14 @@ public class BlueprintTests
         Assert.AreEqual(default(TestVelocity), vel);
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [Test]
     public void IT_Blueprint_GetNonExistent_ThrowsException()
     {
         var blueprint = EntityBlueprint.Empty;
-        blueprint.Get<TestPosition>();
+        Assert.Throws<ArgumentException>(() => blueprint.Get<TestPosition>());
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Blueprint_Clone_CreatesIndependentCopy()
     {
         var original = EntityBlueprint.Empty
@@ -132,7 +131,7 @@ public class BlueprintTests
         Assert.IsTrue(clone.Has<TestVelocity>());
     }
 
-    [TestMethod]
+    [Test]
     public void IT_Blueprint_SignatureCaching_WorksCorrectly()
     {
         var blueprint = EntityBlueprint.Empty;
@@ -148,7 +147,7 @@ public class BlueprintTests
         Assert.IsFalse(withPosSignature.IsEmpty);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_WorldInstantiate_SingleBlueprint_CreatesEntity()
     {
         var world = new World();
@@ -171,7 +170,7 @@ public class BlueprintTests
         Assert.AreEqual(2.71f, vel.VY, 0.001f);
     }
 
-    [TestMethod]
+    [Test]
     public void IT_WorldInstantiate_EmptyBlueprint_CreatesEmptyEntity()
     {
         var world = new World();
@@ -184,7 +183,7 @@ public class BlueprintTests
         Assert.IsFalse(world.HasComponent<TestVelocity>(entity));
     }
 
-    [TestMethod]
+    [Test]
     public void IT_WorldInstantiateBatch_MultipleEntities_CreatesAll()
     {
         var world = new World();
@@ -209,23 +208,21 @@ public class BlueprintTests
         }
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [Test]
     public void IT_WorldInstantiateBatch_ZeroCount_ThrowsException()
     {
         var world = new World();
         var blueprint = EntityBlueprint.Empty;
         
-        world.InstantiateBatch(blueprint, 0);
+        Assert.Throws<ArgumentException>(() => world.InstantiateBatch(blueprint, 0));
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [Test]
     public void IT_WorldInstantiateBatch_NegativeCount_ThrowsException()
     {
         var world = new World();
         var blueprint = EntityBlueprint.Empty;
         
-        world.InstantiateBatch(blueprint, -5);
+        Assert.Throws<ArgumentException>(() => world.InstantiateBatch(blueprint, -5));
     }
 }

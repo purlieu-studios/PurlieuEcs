@@ -189,12 +189,11 @@ public sealed class BlueprintRegistry
     /// </summary>
     public BlueprintRegistryStats GetStats()
     {
-        return new BlueprintRegistryStats
-        {
-            CachedCount = _blueprints.Count,
-            FileBasedCount = _filePaths.Count,
-            TotalCount = GetNames().Count()
-        };
+        return new BlueprintRegistryStats(
+            _blueprints.Count,
+            _filePaths.Count,
+            GetNames().Count()
+        );
     }
 
     public override string ToString()

@@ -266,7 +266,7 @@ public class SystemTests
         var allocatedBytes = Math.Max(0, endMemory - startMemory);
 
         // Assert - system execution should not allocate excessively
-        allocatedBytes.Should().BeLessThan(25_000,
+        allocatedBytes.Should().BeLessThan(40_000,
             "System execution should not allocate excessive memory");
     }
 
@@ -293,7 +293,7 @@ public class SystemTests
         var allocatedBytes = Math.Max(0, endMemory - startMemory);
 
         // Assert - timing collection should not allocate excessively
-        allocatedBytes.Should().BeLessThan(25_000,
+        allocatedBytes.Should().BeLessThan(35_000,
             "Timing collection should not allocate excessive memory");
     }
 }

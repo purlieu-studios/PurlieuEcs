@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using Purlieu.Ecs.Events;
 using Purlieu.Ecs.Query;
 using Purlieu.Ecs.Systems;
 
@@ -13,6 +16,8 @@ public sealed class World
     private uint _nextEntityId;
     private readonly Queue<uint> _freeEntityIds;
     private readonly SystemScheduler _scheduler;
+    private readonly Dictionary<Type, object> _eventChannels;
+    private readonly HashSet<Type> _oneFrameEventTypes;
 
     public World()
     {
@@ -21,6 +26,8 @@ public sealed class World
         _nextEntityId = 1; // Start from 1, reserve 0 for null
         _freeEntityIds = new Queue<uint>();
         _scheduler = new SystemScheduler();
+        _eventChannels = new Dictionary<Type, object>();
+        _oneFrameEventTypes = new HashSet<Type>();
     }
 
     public Entity CreateEntity()
@@ -262,6 +269,75 @@ public sealed class World
     {
         return _scheduler.GetExecutionOrder();
     }
+
+    /// <summary>
+    /// Gets or creates an event channel for the specified event type.
+    /// </summary>
+    /// <typeparam name="T">Event type - must be struct</typeparam>
+    /// <param name="capacity">Channel capacity (default: 1024)</param>
+    /// <returns>Event channel for the specified type</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public EventChannel<T> Events<T>(int capacity = 1024) where T : struct
+    {
+        var eventType = typeof(T);
+        
+        if (!_eventChannels.TryGetValue(eventType, out var channel))
+        {
+            channel = new EventChannel<T>(capacity);
+            _eventChannels[eventType] = channel;
+            
+            // Check if this event type has OneFrame attribute
+            if (eventType.GetCustomAttribute<OneFrameAttribute>() != null)
+            {
+                _oneFrameEventTypes.Add(eventType);
+            }
+        }
+
+        return (EventChannel<T>)channel;
+    }
+
+    /// <summary>
+    /// Clears all events marked with [OneFrame] attribute.
+    /// This should be called at the end of each frame to maintain event lifetime semantics.
+    /// </summary>
+    public void ClearOneFrameEvents()
+    {
+        foreach (var eventType in _oneFrameEventTypes)
+        {
+            if (_eventChannels.TryGetValue(eventType, out var channel))
+            {
+                // Use reflection to call Clear() on the typed channel
+                var clearMethod = channel.GetType().GetMethod("Clear");
+                clearMethod?.Invoke(channel, null);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets statistics for all active event channels.
+    /// </summary>
+    /// <returns>Dictionary of event types to their channel statistics</returns>
+    public IReadOnlyDictionary<Type, object> GetEventChannelStats()
+    {
+        var stats = new Dictionary<Type, object>();
+        
+        foreach (var kvp in _eventChannels)
+        {
+            // Use reflection to call GetStats() on the typed channel
+            var getStatsMethod = kvp.Value.GetType().GetMethod("GetStats");
+            if (getStatsMethod != null)
+            {
+                stats[kvp.Key] = getStatsMethod.Invoke(kvp.Value, null);
+            }
+        }
+
+        return stats;
+    }
+
+    /// <summary>
+    /// Gets the number of active event channels.
+    /// </summary>
+    public int EventChannelCount => _eventChannels.Count;
 
     public override string ToString()
     {

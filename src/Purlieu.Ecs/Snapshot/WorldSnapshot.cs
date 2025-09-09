@@ -125,10 +125,10 @@ public static class WorldSnapshot
 
         return new SnapshotMetadata
         {
-            FormatVersion = root.GetProperty("FormatVersion").GetUInt32(),
-            Timestamp = root.GetProperty("Timestamp").GetInt64(),
-            EntityCount = root.GetProperty("EntityCount").GetInt32(),
-            ArchetypeCount = root.GetProperty("ArchetypeCount").GetInt32(),
+            FormatVersion = root.TryGetProperty("FormatVersion", out var formatVersion) ? formatVersion.GetUInt32() : 1u,
+            Timestamp = root.TryGetProperty("Timestamp", out var timestamp) ? timestamp.GetInt64() : DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            EntityCount = root.TryGetProperty("EntityCount", out var entityCount) ? entityCount.GetInt32() : 0,
+            ArchetypeCount = root.TryGetProperty("ArchetypeCount", out var archetypeCount) ? archetypeCount.GetInt32() : 0,
             CompressedSize = snapshotData.Length,
             UncompressedSize = jsonBytes.Length
         };

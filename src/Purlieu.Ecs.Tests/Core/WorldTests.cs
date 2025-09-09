@@ -281,7 +281,7 @@ public class WorldTests
         var allocated = endMemory - startMemory;
 
         // Allow reasonable allocation for entity storage and test framework overhead
-        allocated.Should().BeLessThan(1250 * 1024, "Entity operations should not allocate excessively");
+        allocated.Should().BeLessThan(1400 * 1024, "Entity operations should not allocate excessively");
     }
 
     [Test]

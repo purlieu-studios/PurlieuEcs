@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BenchmarkDotNet.Attributes;
 using Purlieu.Ecs.Blueprints;
 using Purlieu.Ecs.Core;

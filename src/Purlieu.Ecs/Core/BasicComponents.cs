@@ -1,4 +1,4 @@
-﻿namespace Purlieu.Ecs.Core;
+namespace Purlieu.Ecs.Core;
 
 /// <summary>
 /// Basic position component for 3D space.

@@ -188,7 +188,7 @@ public class BlueprintSerializationTests
     public void SNAP_DeserializeFromJson_InvalidJson_ThrowsException()
     {
         var invalidJson = "{ invalid json }";
-        Assert.Throws<InvalidOperationException>(() => BlueprintSerializer.DeserializeFromJson(invalidJson));
+        Assert.Throws<JsonException>(() => BlueprintSerializer.DeserializeFromJson(invalidJson));
     }
 
     [Test]

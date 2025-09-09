@@ -1,4 +1,4 @@
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
 using Purlieu.Ecs.Benchmark;
 
 namespace Purlieu.Ecs.Benchmark;

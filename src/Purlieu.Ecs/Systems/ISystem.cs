@@ -1,4 +1,4 @@
-using Purlieu.Ecs.Core;
+﻿using Purlieu.Ecs.Core;
 
 namespace Purlieu.Ecs.Systems;
 

@@ -1,4 +1,4 @@
-using AutoFixture;
+﻿using AutoFixture;
 using Bogus;
 using FluentAssertions;
 using NUnit.Framework;

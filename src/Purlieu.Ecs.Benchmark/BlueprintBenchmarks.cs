@@ -29,10 +29,10 @@ public class BlueprintBenchmarks
 
     private struct BenchTag { }
 
-    private World _world;
-    private EntityBlueprint _simpleBlueprint;
-    private EntityBlueprint _complexBlueprint;
-    private BlueprintRegistry _registry;
+    private World _world = null!;
+    private EntityBlueprint _simpleBlueprint = null!;
+    private EntityBlueprint _complexBlueprint = null!;
+    private BlueprintRegistry _registry = null!;
 
     [GlobalSetup]
     public void Setup()

@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Purlieu.Ecs.Core;
 using System;
 using System.Collections.Generic;

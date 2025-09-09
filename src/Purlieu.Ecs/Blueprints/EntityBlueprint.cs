@@ -50,11 +50,17 @@ public sealed class EntityBlueprint
     }
 
     /// <summary>
-    /// Add a component to this blueprint.
+    /// Add or replace a component in this blueprint.
     /// </summary>
     public EntityBlueprint With<T>(in T component) where T : struct
     {
-        var componentData = new ComponentData(typeof(T), component);
+        var componentType = typeof(T);
+
+        // Remove existing component of same type first
+        _components.RemoveAll(c => c.ComponentType == componentType);
+
+        // Add the new component
+        var componentData = new ComponentData(componentType, component);
         _components.Add(componentData);
         _cachedSignature = null; // Invalidate cache
         return this;

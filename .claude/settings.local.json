@@ -62,7 +62,14 @@
       "Bash(dotnet restore:*)",
       "Bash(dotnet format:*)",
       "Bash(del \"F:\\BestEcs\\Ecs\\Purlieu.ECs\\src\\Purlieu.Ecs\\Core\\Components.cs\")",
-      "Bash(gh pr:*)"
+      "Bash(gh pr:*)",
+      "Bash(dotnet tool install husky --global)",
+      "Bash(husky:*)",
+      "Bash(del test-format.cs)",
+      "Bash(.huskypre-commit)",
+      "Bash(..huskypre-commit)",
+      "Bash(git config:*)",
+      "Bash(powershell:*)"
     ],
     "deny": [],
     "ask": []

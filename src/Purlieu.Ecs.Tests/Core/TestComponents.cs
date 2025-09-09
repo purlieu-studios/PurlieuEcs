@@ -1,4 +1,4 @@
-namespace Purlieu.Ecs.Tests.Core;
+﻿namespace Purlieu.Ecs.Tests.Core;
 
 // Test component structs for testing
 

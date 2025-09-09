@@ -31,6 +31,7 @@ public sealed class BlueprintRegistry
             throw new ArgumentNullException(nameof(blueprint));
 
         _blueprints[name] = blueprint;
+        // Note: This preserves existing file path associations when re-registering blueprints
     }
 
     /// <summary>

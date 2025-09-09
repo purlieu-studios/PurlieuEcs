@@ -221,7 +221,7 @@ public class BlueprintRegistryTests
     [Test]
     public void IT_Registry_RegisterNullName_ThrowsException()
     {
-        Assert.Throws<ArgumentException>(() => _registry.Register(null, EntityBlueprint.Empty));
+        Assert.Throws<ArgumentException>(() => _registry.Register(null!, EntityBlueprint.Empty));
     }
 
     [Test]
@@ -233,7 +233,7 @@ public class BlueprintRegistryTests
     [Test]
     public void IT_Registry_RegisterNullBlueprint_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() => _registry.Register("Test", null));
+        Assert.Throws<ArgumentNullException>(() => _registry.Register("Test", null!));
     }
 
     [Test]

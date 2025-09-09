@@ -124,6 +124,27 @@ public sealed class Chunk
         span[index] = component;
     }
 
+    /// <summary>
+    /// Set a component by type and boxed value. Used by blueprint instantiation.
+    /// </summary>
+    public void SetComponentByType(int index, Type componentType, object componentValue)
+    {
+        if (index < 0 || index >= _count)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        if (!componentType.IsValueType)
+            throw new ArgumentException($"Component type {componentType} must be a value type (struct)");
+
+        if (!_componentArrays.TryGetValue(componentType, out var array))
+        {
+            // Create array on first access
+            array = Array.CreateInstance(componentType, Capacity);
+            _componentArrays[componentType] = array;
+        }
+
+        array.SetValue(componentValue, index);
+    }
+
     public void EnsureComponentArray<T>() where T : struct
     {
         var componentType = typeof(T);

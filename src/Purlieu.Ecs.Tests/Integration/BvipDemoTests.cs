@@ -38,7 +38,7 @@ public class BvipDemoTests
         var player = _world.CreateEntity();
         _world.AddComponent(player, new Position(0, 0, 0));
         _world.AddComponent(player, new Velocity(10, 5, 0));
-        
+
         var enemy = _world.CreateEntity();
         _world.AddComponent(enemy, new Position(0, 0, 0));
         _world.AddComponent(enemy, new Velocity(-10, -5, 0));
@@ -60,10 +60,10 @@ public class BvipDemoTests
         _world.UpdateSystems(0.1f);
 
         // Assert: Verify all intents were processed correctly
-        
+
         // Movement should have generated PositionChangedIntents
         _bridge.PositionChangedIntents.Should().HaveCount(2, "both entities should have moved");
-        
+
         // Player movement verification - using same pattern as working test
         var playerMove = _bridge.PositionChangedIntents.First(i => i.Entity == player);
         playerMove.X.Should().BeApproximately(1.0f, 0.001f); // 10 * 0.1
@@ -142,7 +142,7 @@ public class BvipDemoTests
 
             // Assert: Each frame should produce one PositionChangedIntent
             _bridge.PositionChangedIntents.Should().HaveCount(1, $"Frame {frame + 1} should emit position change");
-            
+
             var intent = _bridge.PositionChangedIntents[0];
             intent.Entity.Should().Be(entity);
             intent.X.Should().BeApproximately((frame + 1) * 0.016f, 0.001f);
@@ -170,7 +170,7 @@ public class BvipDemoTests
     {
         // This test verifies that IntentProcessorSystem runs after game logic systems
         // by checking system execution order and phase configuration
-        
+
         // Act: Get system timing information
         var movementTiming = _world.GetSystemTiming(typeof(MovementSystem));
         var processorTiming = _world.GetSystemTiming(typeof(IntentProcessorSystem));
@@ -201,10 +201,10 @@ public class BvipDemoTests
 
         // Assert: Should have exactly one intent
         _bridge.PositionChangedIntents.Should().HaveCount(1);
-        
+
         var intent = _bridge.PositionChangedIntents[0];
         intent.Entity.Should().Be(entity);
-        
+
         // Expected final position = initial + velocity * deltaTime
         // X: 0 + 10 * 0.1 = 1.0
         // Y: 0 + 5 * 0.1 = 0.5
@@ -215,7 +215,7 @@ public class BvipDemoTests
         intent.PreviousX.Should().Be(0f);
         intent.PreviousY.Should().Be(0f);
         intent.PreviousZ.Should().Be(0f);
-        
+
         // Also verify that the Position component was updated correctly
         var newPosition = _world.GetComponent<Position>(entity);
         newPosition.X.Should().BeApproximately(1.0f, 0.001f);

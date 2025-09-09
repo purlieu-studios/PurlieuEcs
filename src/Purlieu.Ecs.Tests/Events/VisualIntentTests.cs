@@ -150,7 +150,7 @@ public class VisualIntentTests
         // Arrange
         var entity1 = _world.CreateEntity();
         var entity2 = _world.CreateEntity();
-        
+
         var posIntent = new PositionChangedIntent(entity1, 1, 2, 3, 0, 0, 0);
         var spawnIntent = new EntitySpawnedIntent(entity2, "Enemy", 5, 5, 5);
         var healthIntent = new HealthChangedIntent(entity1, 50, 100, 75);
@@ -176,7 +176,7 @@ public class VisualIntentTests
 
         // Assert
         timing.Should().NotBeNull();
-        
+
         // Verify the system is registered and will execute in presentation phase
         var executionOrder = _world.GetSystemExecutionOrder();
         executionOrder.Should().Contain(typeof(IntentProcessorSystem));
@@ -196,7 +196,7 @@ public class VisualIntentTests
         // Act & Assert - Should not throw
         Action action = () => _world.UpdateSystems(0.016f);
         action.Should().NotThrow();
-        
+
         _bridge.TotalIntents.Should().Be(0);
     }
 
@@ -216,7 +216,7 @@ public class VisualIntentTests
                 var intent = new PositionChangedIntent(entities[i], i, i * 2, i * 3, 0, 0, 0);
                 _world.Events<PositionChangedIntent>().Publish(in intent);
             }
-            
+
             _world.UpdateSystems(0.016f);
 
             // Assert - Same results each run

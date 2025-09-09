@@ -23,14 +23,14 @@ public sealed class IntentProcessorSystem : ISystem
     {
         // Process position changed intents
         ProcessPositionChangedIntents(world);
-        
+
         // Process entity lifecycle intents
         ProcessEntitySpawnedIntents(world);
         ProcessEntityDestroyedIntents(world);
-        
+
         // Process component change intents
         ProcessHealthChangedIntents(world);
-        
+
         // Process animation and sound intents
         ProcessAnimationTriggeredIntents(world);
         ProcessSoundTriggeredIntents(world);

@@ -44,7 +44,7 @@ public sealed class MovementSystem : ISystem
                         newPosition.X, newPosition.Y, newPosition.Z,
                         oldPosition.X, oldPosition.Y, oldPosition.Z
                     );
-                    
+
                     world.Events<PositionChangedIntent>().Publish(in intent);
                 }
             }

@@ -100,7 +100,7 @@ public sealed class RecordingBridgeInterface : IBridgeInterface
         SoundTriggeredIntents.Clear();
     }
 
-    public int TotalIntents => 
+    public int TotalIntents =>
         PositionChangedIntents.Count +
         EntitySpawnedIntents.Count +
         EntityDestroyedIntents.Count +

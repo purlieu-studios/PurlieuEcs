@@ -9,7 +9,8 @@ public class BasicTests
     public void API_BasicSetup_ShouldPass()
     {
         // This is a placeholder test to ensure the test framework is working
-        Assert.That(true, Is.True);
+        var isWorking = true;
+        Assert.That(isWorking, Is.True);
     }
 
     [Test]
@@ -24,6 +25,7 @@ public class BasicTests
     public void IT_Integration_ShouldPass()
     {
         // Placeholder integration test
-        Assert.That("test", Is.Not.Null);
+        var testString = "test";
+        Assert.That(testString, Is.Not.Null);
     }
 }

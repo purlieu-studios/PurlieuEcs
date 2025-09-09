@@ -33,16 +33,16 @@ public sealed class SystemScheduler
 
         var systemType = system.GetType();
         var phaseAttr = systemType.GetCustomAttribute<GamePhaseAttribute>();
-        
+
         var phase = phaseAttr?.Phase ?? GamePhase.Update;
         var order = phaseAttr?.Order ?? 0;
 
         var entry = new SystemEntry(system, phase, order, systemType);
-        
+
         // Insert in sorted order
         var insertIndex = FindInsertionIndex(entry);
         _systems.Insert(insertIndex, entry);
-        
+
         // Initialize timing data
         _timings[systemType] = new SystemTiming();
     }
@@ -58,9 +58,9 @@ public sealed class SystemScheduler
         {
             var timing = _timings[entry.SystemType];
             var stopwatch = Stopwatch.StartNew();
-            
+
             entry.System.Update(world, deltaTime);
-            
+
             stopwatch.Stop();
             timing.UpdateTiming(stopwatch.Elapsed.TotalMilliseconds);
         }
@@ -111,9 +111,9 @@ public sealed class SystemScheduler
         for (int i = 0; i < _systems.Count; i++)
         {
             var existing = _systems[i];
-            
+
             // Compare by phase first, then by order
-            if (newEntry.Phase < existing.Phase || 
+            if (newEntry.Phase < existing.Phase ||
                 (newEntry.Phase == existing.Phase && newEntry.Order < existing.Order))
             {
                 return i;

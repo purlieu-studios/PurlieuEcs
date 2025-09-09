@@ -12,7 +12,7 @@ public sealed class GamePhaseAttribute : Attribute
     /// The phase in which this system should execute.
     /// </summary>
     public GamePhase Phase { get; }
-    
+
     /// <summary>
     /// The order within the phase (lower values execute first).
     /// </summary>
@@ -39,12 +39,12 @@ public enum GamePhase
     /// Main update phase for game logic.
     /// </summary>
     Update = 0,
-    
+
     /// <summary>
     /// Post-update phase for cleanup and derived calculations.
     /// </summary>
     PostUpdate = 1,
-    
+
     /// <summary>
     /// Presentation phase for visual updates and intent emission.
     /// </summary>

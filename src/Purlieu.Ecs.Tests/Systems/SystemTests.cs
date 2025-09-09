@@ -24,7 +24,7 @@ public class SystemTests
     {
         // Arrange
         var executionOrder = new List<string>();
-        
+
         var postSystem = new PostTestSystem("Post", executionOrder);
         var updateSystem1 = new Update1TestSystem("Update1", executionOrder);
         var updateSystem2 = new Update2TestSystem("Update2", executionOrder);
@@ -145,7 +145,7 @@ public class SystemTests
     {
         var testWorld = new World();
         var entities = new Entity[5];
-        
+
         // Create entities with deterministic initial state
         for (int i = 0; i < entities.Length; i++)
         {
@@ -159,7 +159,7 @@ public class SystemTests
 
         // Run one update step
         testWorld.UpdateSystems(0.016f);
-        
+
         // Return final positions
         return entities.Select(e => testWorld.GetComponent<Purlieu.Ecs.Core.Position>(e)).ToArray();
     }
@@ -190,7 +190,7 @@ public class SystemTests
         // Arrange
         var system1 = new Update1TestSystem("A");
         var system2 = new SlowTestSystem();
-        
+
         _world.RegisterSystem(system1);
         _world.RegisterSystem(system2);
         _world.UpdateSystems(0.016f);
@@ -220,17 +220,17 @@ public class SystemTests
 
         // Act
         var startMemory = GC.GetTotalMemory(true);
-        
+
         foreach (var system in systems)
         {
             world.RegisterSystem(system);
         }
-        
+
         var endMemory = GC.GetTotalMemory(false);
         var allocatedBytes = Math.Max(0, endMemory - startMemory);
-        
+
         // Assert - system registration should not allocate excessively
-        allocatedBytes.Should().BeLessThan(50_000, 
+        allocatedBytes.Should().BeLessThan(50_000,
             "System registration should not allocate excessive memory");
     }
 
@@ -239,7 +239,7 @@ public class SystemTests
     {
         // Arrange
         var world = new World();
-        
+
         // Create some entities with components for systems to process
         for (int i = 0; i < 100; i++)
         {
@@ -259,14 +259,14 @@ public class SystemTests
 
         // Act
         var startMemory = GC.GetTotalMemory(true);
-        
+
         world.UpdateSystems(0.016f);
-        
+
         var endMemory = GC.GetTotalMemory(false);
         var allocatedBytes = Math.Max(0, endMemory - startMemory);
-        
+
         // Assert - system execution should not allocate excessively
-        allocatedBytes.Should().BeLessThan(25_000, 
+        allocatedBytes.Should().BeLessThan(25_000,
             "System execution should not allocate excessive memory");
     }
 
@@ -283,17 +283,17 @@ public class SystemTests
 
         // Act
         var startMemory = GC.GetTotalMemory(true);
-        
+
         for (int i = 0; i < 50; i++)
         {
             world.UpdateSystems(0.016f);
         }
-        
+
         var endMemory = GC.GetTotalMemory(false);
         var allocatedBytes = Math.Max(0, endMemory - startMemory);
-        
+
         // Assert - timing collection should not allocate excessively
-        allocatedBytes.Should().BeLessThan(25_000, 
+        allocatedBytes.Should().BeLessThan(25_000,
             "Timing collection should not allocate excessive memory");
     }
 }

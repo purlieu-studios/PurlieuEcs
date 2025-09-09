@@ -23,7 +23,7 @@ public sealed class MovementSystem : ISystem
             for (int i = 0; i < chunk.Count; i++)
             {
                 var oldPosition = positions[i];
-                
+
                 // Update position based on velocity
                 positions[i] = new Position(
                     oldPosition.X + velocities[i].X * deltaTime,
@@ -33,13 +33,13 @@ public sealed class MovementSystem : ISystem
 
                 // BVIP pattern: emit intent only if position changed
                 var newPosition = positions[i];
-                if (oldPosition.X != newPosition.X || 
-                    oldPosition.Y != newPosition.Y || 
+                if (oldPosition.X != newPosition.X ||
+                    oldPosition.Y != newPosition.Y ||
                     oldPosition.Z != newPosition.Z)
                 {
                     // In a full implementation, this would emit a PositionChangedIntent
                     // For now, this demonstrates the pattern without requiring the Events system
-                    
+
                     // Example: world.Events<PositionChangedIntent>().Publish(new PositionChangedIntent 
                     // { 
                     //     Entity = chunk.GetEntity(i), 

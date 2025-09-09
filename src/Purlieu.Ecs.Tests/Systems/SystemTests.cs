@@ -203,6 +203,99 @@ public class SystemTests
         allTimings.Should().ContainKey(typeof(Update1TestSystem));
         allTimings.Should().ContainKey(typeof(SlowTestSystem));
     }
+
+    [Test]
+    public void ALLOC_SystemScheduler_RegisterSystem_ShouldNotAllocate()
+    {
+        // Arrange
+        var world = new World();
+        var systems = new ISystem[]
+        {
+            new Update1TestSystem("Test1"),
+            new Update2TestSystem("Test2"),
+            new PostTestSystem("Test3"),
+            new PresentTestSystem("Test4"),
+            new SlowTestSystem()
+        };
+
+        // Act
+        var startMemory = GC.GetTotalMemory(true);
+        
+        foreach (var system in systems)
+        {
+            world.RegisterSystem(system);
+        }
+        
+        var endMemory = GC.GetTotalMemory(false);
+        var allocatedBytes = Math.Max(0, endMemory - startMemory);
+        
+        // Assert - system registration should not allocate excessively
+        allocatedBytes.Should().BeLessThan(50_000, 
+            "System registration should not allocate excessive memory");
+    }
+
+    [Test]
+    public void ALLOC_SystemScheduler_UpdateSystems_ShouldNotAllocateExcessively()
+    {
+        // Arrange
+        var world = new World();
+        
+        // Create some entities with components for systems to process
+        for (int i = 0; i < 100; i++)
+        {
+            var entity = world.CreateEntity();
+            world.AddComponent(entity, new Purlieu.Ecs.Core.Position(i, i * 2, i * 3));
+            world.AddComponent(entity, new Purlieu.Ecs.Core.Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
+        }
+
+        // Register multiple systems
+        world.RegisterSystem(new MovementSystem());
+        world.RegisterSystem(new Update1TestSystem("UpdateSys"));
+        world.RegisterSystem(new PostTestSystem("PostSys"));
+        world.RegisterSystem(new PresentTestSystem("PresentSys"));
+
+        // Warm up
+        world.UpdateSystems(0.016f);
+
+        // Act
+        var startMemory = GC.GetTotalMemory(true);
+        
+        world.UpdateSystems(0.016f);
+        
+        var endMemory = GC.GetTotalMemory(false);
+        var allocatedBytes = Math.Max(0, endMemory - startMemory);
+        
+        // Assert - system execution should not allocate excessively
+        allocatedBytes.Should().BeLessThan(25_000, 
+            "System execution should not allocate excessive memory");
+    }
+
+    [Test]
+    public void ALLOC_SystemTiming_UpdateTiming_ShouldNotAllocate()
+    {
+        // Arrange
+        var world = new World();
+        var system = new Update1TestSystem("TimingTest");
+        world.RegisterSystem(system);
+
+        // Warm up timing collection
+        world.UpdateSystems(0.016f);
+
+        // Act
+        var startMemory = GC.GetTotalMemory(true);
+        
+        for (int i = 0; i < 50; i++)
+        {
+            world.UpdateSystems(0.016f);
+        }
+        
+        var endMemory = GC.GetTotalMemory(false);
+        var allocatedBytes = Math.Max(0, endMemory - startMemory);
+        
+        // Assert - timing collection should not allocate excessively
+        allocatedBytes.Should().BeLessThan(25_000, 
+            "Timing collection should not allocate excessive memory");
+    }
 }
 
 // Test helper classes

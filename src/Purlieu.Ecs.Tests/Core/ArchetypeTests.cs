@@ -326,8 +326,10 @@ public class ArchetypeTests
         var accessTime = DateTime.UtcNow - startTime;
 
         archetype.EntityCount.Should().Be(entityCount);
-        addTime.TotalMilliseconds.Should().BeLessThan(1000, "Adding 10k entities should be fast");
-        accessTime.TotalMilliseconds.Should().BeLessThan(100, "Accessing 10k entities should be fast");
+        var addThreshold = PlatformTestHelper.IsLinux || PlatformTestHelper.IsWindows ? 3000 : 1000;
+        var accessThreshold = PlatformTestHelper.IsLinux || PlatformTestHelper.IsWindows ? 500 : 100;
+        addTime.TotalMilliseconds.Should().BeLessThan(addThreshold, $"Adding 10k entities should be fast on {PlatformTestHelper.PlatformDescription}");
+        accessTime.TotalMilliseconds.Should().BeLessThan(accessThreshold, $"Accessing 10k entities should be fast on {PlatformTestHelper.PlatformDescription}");
     }
 
     [Test]

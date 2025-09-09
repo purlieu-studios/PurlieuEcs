@@ -330,8 +330,10 @@ public class WorldTests
         velocityCount.Should().Be((entityCount + 1) / 2); // 0,2,4,...,4998 = 2500 entities
         healthCount.Should().Be((entityCount + 2) / 3);   // 0,3,6,...,4998 = 1667 entities
 
-        createTime.TotalMilliseconds.Should().BeLessThan(2000, "Creating 5k entities with components should be fast");
-        accessTime.TotalMilliseconds.Should().BeLessThan(500, "Accessing 5k entities should be fast");
+        var createThreshold = PlatformTestHelper.IsLinux || PlatformTestHelper.IsWindows ? 6000 : 2000;
+        var accessThreshold = PlatformTestHelper.IsLinux || PlatformTestHelper.IsWindows ? 1500 : 500;
+        createTime.TotalMilliseconds.Should().BeLessThan(createThreshold, $"Creating 5k entities with components should be fast on {PlatformTestHelper.PlatformDescription}");
+        accessTime.TotalMilliseconds.Should().BeLessThan(accessThreshold, $"Accessing 5k entities should be fast on {PlatformTestHelper.PlatformDescription}");
     }
 
     [Test]

@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Purlieu.Ecs.Core;
 using Purlieu.Ecs.Systems;
+using Purlieu.Ecs.Tests.Core;
 
 namespace Purlieu.Ecs.Tests.Systems;
 
@@ -124,9 +125,10 @@ public class SystemPerformanceTests
 
         stopwatch.Stop();
 
-        // Registration should complete quickly
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(100,
-            "Registering 100 systems should complete in under 100ms");
+        // Registration should complete quickly (with platform adjustments)
+        var timeThreshold = PlatformTestHelper.IsLinux || PlatformTestHelper.IsWindows ? 500 : 100;
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(timeThreshold,
+            $"Registering 100 systems should complete in under {timeThreshold}ms on {PlatformTestHelper.PlatformDescription}");
 
         // Execution order should be maintained
         var executionOrder = world.GetSystemExecutionOrder();

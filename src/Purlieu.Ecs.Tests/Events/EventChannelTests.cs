@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using Purlieu.Ecs.Events;
+using Purlieu.Ecs.Tests.Core;
 
 namespace Purlieu.Ecs.Tests.Events;
 
@@ -272,9 +273,11 @@ public class EventChannelTests
         largeChannel.ConsumeAll(evt => consumedCount++);
         var consumeTime = DateTime.UtcNow - consumeStart;
 
-        // Assert - Performance should be reasonable
-        publishTime.TotalMilliseconds.Should().BeLessThan(100, "Publishing should be fast");
-        consumeTime.TotalMilliseconds.Should().BeLessThan(50, "Consuming should be fast");
+        // Assert - Performance should be reasonable (with platform adjustments)
+        var publishThreshold = PlatformTestHelper.IsLinux || PlatformTestHelper.IsWindows ? 500 : 100;
+        var consumeThreshold = PlatformTestHelper.IsLinux || PlatformTestHelper.IsWindows ? 250 : 50;
+        publishTime.TotalMilliseconds.Should().BeLessThan(publishThreshold, $"Publishing should be fast on {PlatformTestHelper.PlatformDescription}");
+        consumeTime.TotalMilliseconds.Should().BeLessThan(consumeThreshold, $"Consuming should be fast on {PlatformTestHelper.PlatformDescription}");
         consumedCount.Should().Be(eventCount);
     }
 

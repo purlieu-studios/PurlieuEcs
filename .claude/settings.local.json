@@ -74,6 +74,8 @@
       "Bash(gh run watch:*)",
       "Bash(gh run view:*)",
       "Bash(git switch:*)",
+      "Bash(gh workflow list:*)",
+      "Bash(gh workflow run:*)"
       "Bash(gh run view:*)"
     ],
     "deny": [],

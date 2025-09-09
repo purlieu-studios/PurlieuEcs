@@ -41,8 +41,7 @@ public class SystemSchedulerTests
         _scheduler.UpdateSystems(_world, 0.016f);
 
         // Assert
-        executionOrder.Should().Equal("System3", "System1", "System2", "System4",
-            because: "Systems should execute in phase order, then by order within phase");
+        executionOrder.Should().Equal("System3", "System1", "System2", "System4");
     }
 
     [Test]

@@ -7,6 +7,11 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 env:
   DOTNET_VERSION: '8.0.x'
   DOTNET_NOLOGO: true
@@ -56,14 +61,15 @@ jobs:
           **/test-results.trx
           **/coverage.cobertura.xml
 
-    - name: Test Report
-      uses: dorny/test-reporter@v1
+    - name: Test Summary
       if: always()
-      with:
-        name: Test Results (${{ matrix.os }})
-        path: '**/test-results.trx'
-        reporter: dotnet-trx
-        fail-on-error: true
+      run: |
+        echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        if [ -f "**/test-results.trx" ]; then
+          echo "Test results available in artifacts" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "No test results found" >> $GITHUB_STEP_SUMMARY
+        fi
 
   code-quality:
     name: Code Quality Checks

@@ -55,7 +55,9 @@
       "Bash(git init:*)",
       "Bash(git remote add:*)",
       "Bash(gh pr edit:*)",
-      "Bash(git rebase:*)"
+      "Bash(git rebase:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

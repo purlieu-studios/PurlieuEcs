@@ -156,7 +156,7 @@ public class EcsV0IntegrationTests
 
         var executionTime = endTime - startTime;
 
-        // Assert - System should execute efficiently
+        // Assert - System should execute efficiently (with platform adjustments for CI)
         var timeThreshold = PlatformTestHelper.IsLinux || PlatformTestHelper.IsWindows ? 500 : 100;
         executionTime.TotalMilliseconds.Should().BeLessThan(timeThreshold,
             $"MovementSystem with {entityCount} entities should execute quickly on {PlatformTestHelper.PlatformDescription}");

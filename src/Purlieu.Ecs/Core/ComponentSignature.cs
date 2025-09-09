@@ -132,13 +132,31 @@ public readonly struct ComponentSignature : IEquatable<ComponentSignature>
 
 public static class ComponentTypeId<T> where T : struct
 {
-    public static readonly int Id = ComponentTypeRegistry.GetOrAssignId<T>();
+    private static int _cachedId = -1;
+    private static int _registryVersion = -1;
+
+    public static int Id
+    {
+        get
+        {
+            var currentVersion = ComponentTypeRegistry.Version;
+            if (_registryVersion != currentVersion)
+            {
+                _cachedId = ComponentTypeRegistry.GetOrAssignId<T>();
+                _registryVersion = currentVersion;
+            }
+            return _cachedId;
+        }
+    }
 }
 
 public static class ComponentTypeRegistry
 {
     private static readonly Dictionary<Type, int> _typeToId = new();
     private static int _nextId = 0;
+    private static int _version = 0;
+
+    public static int Version => _version;
 
     public static int GetOrAssignId<T>() where T : struct
     {
@@ -164,5 +182,6 @@ public static class ComponentTypeRegistry
     {
         _typeToId.Clear();
         _nextId = 0;
+        _version++;
     }
 }

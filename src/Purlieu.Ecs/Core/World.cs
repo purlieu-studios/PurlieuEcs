@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Purlieu.Ecs.Query;
 
 namespace Purlieu.Ecs.Core;
 
@@ -198,6 +199,12 @@ public sealed class World
 
     public int EntityCount => _entityToArchetype.Count;
     public int ArchetypeCount => _archetypes.Count;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IQuery Query()
+    {
+        return new ComponentQuery(this);
+    }
 
     public override string ToString()
     {

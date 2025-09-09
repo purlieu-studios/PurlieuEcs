@@ -63,9 +63,10 @@ jobs:
 
     - name: Test Summary
       if: always()
+      shell: bash
       run: |
         echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
-        if [ -f "**/test-results.trx" ]; then
+        if find . -name "test-results.trx" -type f | grep -q .; then
           echo "Test results available in artifacts" >> $GITHUB_STEP_SUMMARY
         else
           echo "No test results found" >> $GITHUB_STEP_SUMMARY

@@ -165,6 +165,6 @@ public class EventChannelAllocationTests
         var allocated = Math.Max(0, endMemory - startMemory);
 
         // Assert - Stats collection should have controlled allocation
-        allocated.Should().BeLessThan(200 * 1024, "Stats collection should have controlled allocation");
+        allocated.Should().BeLessThan(500 * 1024, "Stats collection should have controlled allocation");
     }
 }

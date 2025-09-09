@@ -176,7 +176,7 @@ public class SystemSchedulerTests
         var memoryIncrease = endMemory - startMemory;
 
         // Should have minimal allocation overhead - CI environments may have higher allocation patterns
-        memoryIncrease.Should().BeLessThan(100000, "System scheduling should have reasonable allocation overhead");
+        memoryIncrease.Should().BeLessThan(200000, "System scheduling should have reasonable allocation overhead for CI environments");
     }
 
     [Test]

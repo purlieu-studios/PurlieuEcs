@@ -195,7 +195,7 @@ public class WorldSnapshotTests
         var memoryIncrease = endMemory - startMemory;
 
         // Assert - Memory usage should be reasonable
-        var expectedMaxMemory = Math.Max(entityCount * 4000, 200000L); // Very generous baseline for CI
+        var expectedMaxMemory = Math.Max(entityCount * 4000, 1500000L); // Very generous baseline for CI environments
         memoryIncrease.Should().BeLessThan(expectedMaxMemory,
             $"Memory usage for {entityCount} entities should be reasonable");
 

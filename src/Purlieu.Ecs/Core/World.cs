@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Purlieu.Ecs.Query;
+using Purlieu.Ecs.Systems;
 
 namespace Purlieu.Ecs.Core;
 
@@ -10,6 +12,7 @@ public sealed class World
     private readonly Dictionary<Entity, Archetype> _entityToArchetype;
     private uint _nextEntityId;
     private readonly Queue<uint> _freeEntityIds;
+    private readonly SystemScheduler _scheduler;
 
     public World()
     {
@@ -17,6 +20,7 @@ public sealed class World
         _entityToArchetype = new Dictionary<Entity, Archetype>();
         _nextEntityId = 1; // Start from 1, reserve 0 for null
         _freeEntityIds = new Queue<uint>();
+        _scheduler = new SystemScheduler();
     }
 
     public Entity CreateEntity()
@@ -198,6 +202,66 @@ public sealed class World
 
     public int EntityCount => _entityToArchetype.Count;
     public int ArchetypeCount => _archetypes.Count;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public IQuery Query()
+    {
+        return new ComponentQuery(this);
+    }
+
+    /// <summary>
+    /// Registers a system for execution.
+    /// </summary>
+    /// <param name="system">The system to register</param>
+    public void RegisterSystem(ISystem system)
+    {
+        _scheduler.RegisterSystem(system);
+    }
+
+    /// <summary>
+    /// Updates all registered systems in phase order.
+    /// </summary>
+    /// <param name="deltaTime">Time elapsed since last frame in seconds</param>
+    public void UpdateSystems(float deltaTime)
+    {
+        _scheduler.UpdateSystems(this, deltaTime);
+    }
+
+    /// <summary>
+    /// Gets timing information for a specific system type.
+    /// </summary>
+    /// <param name="systemType">The system type to get timing for</param>
+    /// <returns>Timing information or null if system not found</returns>
+    public SystemTiming? GetSystemTiming(Type systemType)
+    {
+        return _scheduler.GetSystemTiming(systemType);
+    }
+
+    /// <summary>
+    /// Gets timing information for all registered systems.
+    /// </summary>
+    /// <returns>Dictionary of system types to their timing information</returns>
+    public IReadOnlyDictionary<Type, SystemTiming> GetAllSystemTimings()
+    {
+        return _scheduler.GetAllTimings();
+    }
+
+    /// <summary>
+    /// Resets peak timing values for all systems.
+    /// </summary>
+    public void ResetSystemPeaks()
+    {
+        _scheduler.ResetPeaks();
+    }
+
+    /// <summary>
+    /// Gets the execution order of registered systems.
+    /// </summary>
+    /// <returns>Ordered list of system types</returns>
+    public IReadOnlyList<Type> GetSystemExecutionOrder()
+    {
+        return _scheduler.GetExecutionOrder();
+    }
 
     public override string ToString()
     {

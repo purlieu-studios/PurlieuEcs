@@ -1,33 +1,6 @@
 namespace Purlieu.Ecs.Tests.Core;
 
 // Test component structs for testing
-public struct Position
-{
-    public float X, Y, Z;
-
-    public Position(float x, float y, float z = 0)
-    {
-        X = x;
-        Y = y;
-        Z = z;
-    }
-
-    public override string ToString() => $"Position({X},{Y},{Z})";
-}
-
-public struct Velocity
-{
-    public float X, Y, Z;
-
-    public Velocity(float x, float y, float z = 0)
-    {
-        X = x;
-        Y = y;
-        Z = z;
-    }
-
-    public override string ToString() => $"Velocity({X},{Y},{Z})";
-}
 
 public struct Health
 {

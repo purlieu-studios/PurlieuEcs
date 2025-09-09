@@ -23,7 +23,7 @@ public class QueryTests
     public void API_QueryCreation_ShouldReturnValidQuery()
     {
         var query = _world.Query();
-        
+
         query.Should().NotBeNull();
         query.Should().BeAssignableTo<IQuery>();
     }
@@ -47,7 +47,7 @@ public class QueryTests
         // Assert
         chunks.Should().HaveCount(1);
         chunks[0].Count.Should().Be(2);
-        
+
         var positions = chunks[0].GetSpan<Position>();
         positions.Length.Should().Be(2);
     }
@@ -122,7 +122,7 @@ public class QueryTests
             .With<Position>()
             .With<Velocity>()
             .Without<Health>();
-        
+
         var chunks = query.Chunks().ToList();
 
         // Assert - only entity1 matches (has Pos+Vel, no Health)
@@ -165,7 +165,7 @@ public class QueryTests
         _world.AddComponent(entities[9], new Velocity(9, 9, 9));
 
         // Act & Assert different queries
-        
+
         // Query 1: All entities with Position (should be 0-8)
         var positionQuery = _world.Query().With<Position>();
         var positionChunks = positionQuery.Chunks().ToList();
@@ -194,7 +194,7 @@ public class QueryTests
         {
             entities[i] = _world.CreateEntity();
             _world.AddComponent(entities[i], new Position(i, i * 2, i * 3));
-            
+
             if (i % 2 == 0)
             {
                 _world.AddComponent(entities[i], new Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
@@ -203,7 +203,7 @@ public class QueryTests
 
         // Act - run query multiple times
         var query = _world.Query().With<Position>().With<Velocity>();
-        
+
         var results1 = query.Chunks().ToList();
         var results2 = query.Chunks().ToList();
         var results3 = query.Chunks().ToList();
@@ -211,11 +211,11 @@ public class QueryTests
         // Assert - results should be identical
         results1.Should().HaveCount(results2.Count);
         results1.Should().HaveCount(results3.Count);
-        
+
         var count1 = results1.Sum(c => c.Count);
         var count2 = results2.Sum(c => c.Count);
         var count3 = results3.Sum(c => c.Count);
-        
+
         count1.Should().Be(count2);
         count1.Should().Be(count3);
         count1.Should().Be(3); // entities 0, 2, 4 have both components

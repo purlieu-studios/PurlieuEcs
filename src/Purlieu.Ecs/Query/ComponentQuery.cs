@@ -36,7 +36,7 @@ public sealed class ComponentQuery : IQuery
     public IEnumerable<Chunk> Chunks()
     {
         var archetypes = _world.GetArchetypes();
-        
+
         foreach (var archetype in archetypes)
         {
             if (MatchesQuery(archetype.Signature))

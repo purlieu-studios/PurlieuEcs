@@ -327,7 +327,11 @@ public sealed class World
             var getStatsMethod = kvp.Value.GetType().GetMethod("GetStats");
             if (getStatsMethod != null)
             {
-                stats[kvp.Key] = getStatsMethod.Invoke(kvp.Value, null);
+                var result = getStatsMethod.Invoke(kvp.Value, null);
+                if (result != null)
+                {
+                    stats[kvp.Key] = result;
+                }
             }
         }
 

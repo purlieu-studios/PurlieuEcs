@@ -244,10 +244,10 @@ public class EventChannelTests
     public void API_EventChannel_ConsumeAllWithNullAction_ShouldThrow()
     {
         // Act & Assert
-        Action action1 = () => _channel.ConsumeAll((Action<TestEvent>)null);
+        Action action1 = () => _channel.ConsumeAll((Action<TestEvent>)null!);
         action1.Should().Throw<ArgumentNullException>();
 
-        Action action2 = () => _channel.ConsumeAll((RefAction<TestEvent>)null);
+        Action action2 = () => _channel.ConsumeAll((RefAction<TestEvent>)null!);
         action2.Should().Throw<ArgumentNullException>();
     }
 

@@ -240,14 +240,15 @@ Godot listens for `PositionChangedIntent` → moves sprite.
 
 ## ✅ Definition of Done (v0)
 
-- Entities + archetype storage working.  
-- Query With/Without + chunk iteration.  
-- Systems + scheduler w/ profiling.  
-- EventChannel<T> + OneFrame cleanup.  
-- Blueprint spawning integrated.  
-- Snapshot save/load working.  
-- MovementSystem + intent bridge demo in Godot.  
-- Tests + benchmarks pass.  
+- ✅ Entities + archetype storage working.  
+- ✅ Query With/Without + chunk iteration.  
+- ✅ Systems + scheduler w/ profiling.  
+- ✅ EventChannel<T> + OneFrame cleanup.  
+- ✅ Blueprint spawning integrated.  
+- ✅ Snapshot save/load working.  
+- ✅ MovementSystem + intent bridge demo.  
+- ✅ Tests + benchmarks pass.  
+- ✅ CI/CD workflows validate regression protection.
 
 ---
 

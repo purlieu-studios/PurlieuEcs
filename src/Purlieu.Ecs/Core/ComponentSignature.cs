@@ -138,6 +138,16 @@ public readonly struct ComponentSignature : IEquatable<ComponentSignature>
     {
         return new ComponentSignature(bits);
     }
+
+    /// <summary>
+    /// Gets the raw bit mask for serialization.
+    /// </summary>
+    public ulong ToMask() => _bits;
+
+    /// <summary>
+    /// Creates a signature from a raw bit mask.
+    /// </summary>
+    public static ComponentSignature FromMask(ulong mask) => new(mask);
 }
 
 public static class ComponentTypeId<T> where T : struct

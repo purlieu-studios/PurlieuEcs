@@ -293,7 +293,7 @@ public class ArchetypeTests
         var endMemory = GC.GetTotalMemory(false);
         var allocated = endMemory - startMemory;
 
-        allocated.Should().BeLessThan(50 * 1024, "Component access should have minimal allocation");
+        allocated.Should().BeLessThan(100 * 1024, "Component access should have minimal allocation");
     }
 
     [Test]

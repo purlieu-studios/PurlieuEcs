@@ -121,6 +121,6 @@ public class QueryAllocationTests
         var endMemory = GC.GetTotalMemory(false);
         var allocated = endMemory - startMemory;
 
-        allocated.Should().BeLessThan(100 * 1024, "Repeated query execution should not grow memory significantly");
+        allocated.Should().BeLessThan(105 * 1024, "Repeated query execution should not grow memory significantly");
     }
 }

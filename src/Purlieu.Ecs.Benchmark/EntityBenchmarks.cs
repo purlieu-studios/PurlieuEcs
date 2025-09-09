@@ -12,9 +12,9 @@ namespace Purlieu.Ecs.Benchmark;
 [MarkdownExporter]
 public class EntityBenchmarks
 {
-    private Entity[] _entities;
-    private ulong[] _packedEntities;
-    private HashSet<Entity> _entityHashSet;
+    private Entity[] _entities = null!;
+    private ulong[] _packedEntities = null!;
+    private HashSet<Entity> _entityHashSet = null!;
     private const int EntityCount = 10000;
 
     [GlobalSetup]

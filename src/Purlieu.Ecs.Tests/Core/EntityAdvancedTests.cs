@@ -31,8 +31,10 @@ public class EntityAdvancedTests
         // Act & Assert
         entity.Should().Be(entity);
         entity.Equals(entity).Should().BeTrue();
+#pragma warning disable CS1718 // Comparison made to same variable
         (entity == entity).Should().BeTrue();
         (entity != entity).Should().BeFalse();
+#pragma warning restore CS1718
     }
 
     [Test]

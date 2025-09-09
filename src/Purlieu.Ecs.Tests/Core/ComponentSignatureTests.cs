@@ -27,25 +27,25 @@ public class ComponentSignatureTests
     [Test]
     public void API_WithComponent_ShouldSetCorrectBit()
     {
-        var signature = ComponentSignature.Empty.With<Position>();
+        var signature = ComponentSignature.Empty.With<Purlieu.Ecs.Core.Position>();
 
         signature.IsEmpty.Should().BeFalse();
         signature.ComponentCount.Should().Be(1);
-        signature.Has<Position>().Should().BeTrue();
-        signature.Has<Velocity>().Should().BeFalse();
+        signature.Has<Purlieu.Ecs.Core.Position>().Should().BeTrue();
+        signature.Has<Purlieu.Ecs.Core.Velocity>().Should().BeFalse();
     }
 
     [Test]
     public void API_WithMultipleComponents_ShouldSetMultipleBits()
     {
         var signature = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>()
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>()
             .With<Health>();
 
         signature.ComponentCount.Should().Be(3);
-        signature.Has<Position>().Should().BeTrue();
-        signature.Has<Velocity>().Should().BeTrue();
+        signature.Has<Purlieu.Ecs.Core.Position>().Should().BeTrue();
+        signature.Has<Purlieu.Ecs.Core.Velocity>().Should().BeTrue();
         signature.Has<Health>().Should().BeTrue();
         signature.Has<Name>().Should().BeFalse();
     }
@@ -54,31 +54,31 @@ public class ComponentSignatureTests
     public void API_WithoutComponent_ShouldRemoveBit()
     {
         var signature = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>()
-            .Without<Position>();
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>()
+            .Without<Purlieu.Ecs.Core.Position>();
 
         signature.ComponentCount.Should().Be(1);
-        signature.Has<Position>().Should().BeFalse();
-        signature.Has<Velocity>().Should().BeTrue();
+        signature.Has<Purlieu.Ecs.Core.Position>().Should().BeFalse();
+        signature.Has<Purlieu.Ecs.Core.Velocity>().Should().BeTrue();
     }
 
     [Test]
     public void API_HasAll_ShouldCheckAllRequiredComponents()
     {
         var signature = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>()
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>()
             .With<Health>();
 
         var required = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>();
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>();
 
         signature.HasAll(required).Should().BeTrue();
 
         var notRequired = ComponentSignature.Empty
-            .With<Position>()
+            .With<Purlieu.Ecs.Core.Position>()
             .With<Name>();
 
         signature.HasAll(notRequired).Should().BeFalse();
@@ -88,11 +88,11 @@ public class ComponentSignatureTests
     public void API_HasAny_ShouldCheckAnyComponent()
     {
         var signature = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>();
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>();
 
         var someMatching = ComponentSignature.Empty
-            .With<Position>()
+            .With<Purlieu.Ecs.Core.Position>()
             .With<Name>();
 
         signature.HasAny(someMatching).Should().BeTrue();
@@ -108,8 +108,8 @@ public class ComponentSignatureTests
     public void API_HasNone_ShouldCheckNoComponents()
     {
         var signature = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>();
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>();
 
         var noOverlap = ComponentSignature.Empty
             .With<Health>()
@@ -118,7 +118,7 @@ public class ComponentSignatureTests
         signature.HasNone(noOverlap).Should().BeTrue();
 
         var hasOverlap = ComponentSignature.Empty
-            .With<Position>()
+            .With<Purlieu.Ecs.Core.Position>()
             .With<Name>();
 
         signature.HasNone(hasOverlap).Should().BeFalse();
@@ -128,15 +128,15 @@ public class ComponentSignatureTests
     public void API_Equality_ShouldWorkCorrectly()
     {
         var signature1 = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>();
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>();
 
         var signature2 = ComponentSignature.Empty
-            .With<Velocity>()
-            .With<Position>();
+            .With<Purlieu.Ecs.Core.Velocity>()
+            .With<Purlieu.Ecs.Core.Position>();
 
         var signature3 = ComponentSignature.Empty
-            .With<Position>()
+            .With<Purlieu.Ecs.Core.Position>()
             .With<Health>();
 
         signature1.Should().Be(signature2);
@@ -149,12 +149,12 @@ public class ComponentSignatureTests
     public void API_HashCode_ShouldBeConsistent()
     {
         var signature1 = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>();
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>();
 
         var signature2 = ComponentSignature.Empty
-            .With<Velocity>()
-            .With<Position>();
+            .With<Purlieu.Ecs.Core.Velocity>()
+            .With<Purlieu.Ecs.Core.Position>();
 
         signature1.GetHashCode().Should().Be(signature2.GetHashCode());
     }
@@ -164,8 +164,8 @@ public class ComponentSignatureTests
     {
         var emptySignature = ComponentSignature.Empty;
         var signature = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>();
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>();
 
         emptySignature.ToString().Should().Contain("empty");
         signature.ToString().Should().Contain("ComponentSignature");
@@ -175,7 +175,7 @@ public class ComponentSignatureTests
     [Test]
     public void API_ImplicitConversion_ShouldWorkCorrectly()
     {
-        var signature = ComponentSignature.Empty.With<Position>();
+        var signature = ComponentSignature.Empty.With<Purlieu.Ecs.Core.Position>();
         ulong bits = signature;
 
         bits.Should().NotBe(0);
@@ -188,14 +188,14 @@ public class ComponentSignatureTests
     public void DET_ComponentTypeIds_ShouldBeConsistent()
     {
         // Component type IDs should be deterministic within a session
-        var signature1 = ComponentSignature.Empty.With<Position>();
-        var signature2 = ComponentSignature.Empty.With<Position>();
+        var signature1 = ComponentSignature.Empty.With<Purlieu.Ecs.Core.Position>();
+        var signature2 = ComponentSignature.Empty.With<Purlieu.Ecs.Core.Position>();
 
         signature1.Should().Be(signature2);
 
         // Different types should have different IDs
-        var positionSig = ComponentSignature.Empty.With<Position>();
-        var velocitySig = ComponentSignature.Empty.With<Velocity>();
+        var positionSig = ComponentSignature.Empty.With<Purlieu.Ecs.Core.Position>();
+        var velocitySig = ComponentSignature.Empty.With<Purlieu.Ecs.Core.Velocity>();
 
         positionSig.Should().NotBe(velocitySig);
     }
@@ -205,7 +205,7 @@ public class ComponentSignatureTests
     {
         // This test would be hard to implement without creating 64+ types
         // Instead, test the error condition directly
-        var act = () => ComponentSignature.Empty.With<Position>().Has<Position>();
+        var act = () => ComponentSignature.Empty.With<Purlieu.Ecs.Core.Position>().Has<Purlieu.Ecs.Core.Position>();
 
         act.Should().NotThrow(); // Should work normally for valid component counts
     }
@@ -219,12 +219,12 @@ public class ComponentSignatureTests
         for (int i = 0; i < 1000; i++)
         {
             var signature = ComponentSignature.Empty
-                .With<Position>()
-                .With<Velocity>()
+                .With<Purlieu.Ecs.Core.Position>()
+                .With<Purlieu.Ecs.Core.Velocity>()
                 .Without<Health>()
                 .With<Name>();
 
-            var hasPosition = signature.Has<Position>();
+            var hasPosition = signature.Has<Purlieu.Ecs.Core.Position>();
             var count = signature.ComponentCount;
             var isEmpty = signature.IsEmpty;
         }
@@ -239,8 +239,8 @@ public class ComponentSignatureTests
     [Test]
     public void IT_ComponentTypeRegistry_ShouldAssignUniqueIds()
     {
-        var positionId = ComponentTypeId<Position>.Id;
-        var velocityId = ComponentTypeId<Velocity>.Id;
+        var positionId = ComponentTypeId<Purlieu.Ecs.Core.Position>.Id;
+        var velocityId = ComponentTypeId<Purlieu.Ecs.Core.Velocity>.Id;
         var healthId = ComponentTypeId<Health>.Id;
 
         positionId.Should().NotBe(velocityId);

@@ -16,8 +16,8 @@ public class ChunkTests
     {
         ComponentTypeRegistry.Reset();
         _testSignature = ComponentSignature.Empty
-            .With<Position>()
-            .With<Velocity>();
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>();
     }
 
     [Test]
@@ -143,11 +143,11 @@ public class ChunkTests
         chunk.AddEntity(new Entity(1, 1));
         chunk.AddEntity(new Entity(2, 1));
 
-        var positionSpan = chunk.GetSpan<Position>();
+        var positionSpan = chunk.GetSpan<Purlieu.Ecs.Core.Position>();
 
         positionSpan.Length.Should().Be(2);
-        positionSpan[0].Should().Be(default(Position));
-        positionSpan[1].Should().Be(default(Position));
+        positionSpan[0].Should().Be(default(Purlieu.Ecs.Core.Position));
+        positionSpan[1].Should().Be(default(Purlieu.Ecs.Core.Position));
     }
 
     [Test]
@@ -167,10 +167,10 @@ public class ChunkTests
         var chunk = new Chunk(_testSignature);
         chunk.AddEntity(new Entity(1, 1));
 
-        var position = new Position(10, 20, 30);
+        var position = new Purlieu.Ecs.Core.Position(10, 20, 30);
         chunk.SetComponent(0, position);
 
-        var retrieved = chunk.GetComponent<Position>(0);
+        var retrieved = chunk.GetComponent<Purlieu.Ecs.Core.Position>(0);
         retrieved.Should().Be(position);
     }
 
@@ -180,8 +180,8 @@ public class ChunkTests
         var chunk = new Chunk(_testSignature);
         chunk.AddEntity(new Entity(1, 1));
 
-        var act1 = () => chunk.GetComponent<Position>(-1);
-        var act2 = () => chunk.GetComponent<Position>(1);
+        var act1 = () => chunk.GetComponent<Purlieu.Ecs.Core.Position>(-1);
+        var act2 = () => chunk.GetComponent<Purlieu.Ecs.Core.Position>(1);
 
         act1.Should().Throw<ArgumentOutOfRangeException>();
         act2.Should().Throw<ArgumentOutOfRangeException>();
@@ -193,8 +193,8 @@ public class ChunkTests
         var chunk = new Chunk(_testSignature);
         chunk.AddEntity(new Entity(1, 1));
 
-        var act1 = () => chunk.SetComponent(-1, new Position());
-        var act2 = () => chunk.SetComponent(1, new Position());
+        var act1 = () => chunk.SetComponent(-1, new Purlieu.Ecs.Core.Position());
+        var act2 = () => chunk.SetComponent(1, new Purlieu.Ecs.Core.Position());
 
         act1.Should().Throw<ArgumentOutOfRangeException>();
         act2.Should().Throw<ArgumentOutOfRangeException>();
@@ -227,13 +227,13 @@ public class ChunkTests
         // Access components using spans - should not allocate
         for (int iteration = 0; iteration < 10; iteration++)
         {
-            var positions = chunk.GetSpan<Position>();
-            var velocities = chunk.GetSpan<Velocity>();
+            var positions = chunk.GetSpan<Purlieu.Ecs.Core.Position>();
+            var velocities = chunk.GetSpan<Purlieu.Ecs.Core.Velocity>();
 
             for (int i = 0; i < positions.Length; i++)
             {
-                positions[i] = new Position(i, i * 2, i * 3);
-                velocities[i] = new Velocity(i * 0.1f, i * 0.2f, i * 0.3f);
+                positions[i] = new Purlieu.Ecs.Core.Position(i, i * 2, i * 3);
+                velocities[i] = new Purlieu.Ecs.Core.Velocity(i * 0.1f, i * 0.2f, i * 0.3f);
             }
         }
 
@@ -263,7 +263,7 @@ public class ChunkTests
         // Set component data
         for (int i = 0; i < entities.Length; i++)
         {
-            chunk.SetComponent(i, new Position(i * 10, i * 20, i * 30));
+            chunk.SetComponent(i, new Purlieu.Ecs.Core.Position(i * 10, i * 20, i * 30));
         }
 
         // Remove entity at index 1 (entity 2)
@@ -276,7 +276,7 @@ public class ChunkTests
         chunk.GetEntity(2).Should().Be(entities[2]); // Unchanged
 
         // Verify component data moved correctly
-        chunk.GetComponent<Position>(1).Should().Be(new Position(30, 60, 90)); // Data from entity 4
+        chunk.GetComponent<Purlieu.Ecs.Core.Position>(1).Should().Be(new Purlieu.Ecs.Core.Position(30, 60, 90)); // Data from entity 4
     }
 
     [Test]

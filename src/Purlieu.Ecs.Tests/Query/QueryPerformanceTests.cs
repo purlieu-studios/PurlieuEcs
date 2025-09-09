@@ -30,17 +30,17 @@ public class QueryPerformanceTests
         for (int i = 0; i < 10000; i++)
         {
             var entity = _world.CreateEntity();
-            _world.AddComponent(entity, new Position(i, i * 2, i * 3));
+            _world.AddComponent(entity, new Purlieu.Ecs.Core.Position(i, i * 2, i * 3));
         }
 
-        var query = _world.Query().With<Position>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>();
 
         // Warmup
         for (int i = 0; i < WarmupIterations; i++)
         {
             foreach (var chunk in query.Chunks())
             {
-                var positions = chunk.GetSpan<Position>();
+                var positions = chunk.GetSpan<Purlieu.Ecs.Core.Position>();
                 for (int j = 0; j < positions.Length; j++)
                 {
                     _ = positions[j].X;
@@ -54,7 +54,7 @@ public class QueryPerformanceTests
         {
             foreach (var chunk in query.Chunks())
             {
-                var positions = chunk.GetSpan<Position>();
+                var positions = chunk.GetSpan<Purlieu.Ecs.Core.Position>();
                 for (int i = 0; i < positions.Length; i++)
                 {
                     _ = positions[i].X;
@@ -77,16 +77,16 @@ public class QueryPerformanceTests
         for (int i = 0; i < 10000; i++)
         {
             var entity = _world.CreateEntity();
-            _world.AddComponent(entity, new Position(i, i * 2, i * 3));
+            _world.AddComponent(entity, new Purlieu.Ecs.Core.Position(i, i * 2, i * 3));
 
             if (i % 2 == 0)
-                _world.AddComponent(entity, new Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
+                _world.AddComponent(entity, new Purlieu.Ecs.Core.Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
 
             if (i % 3 == 0)
                 _world.AddComponent(entity, new Health(i * 10, i * 10));
         }
 
-        var query = _world.Query().With<Position>().With<Velocity>().Without<Health>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>().With<Purlieu.Ecs.Core.Velocity>().Without<Health>();
 
         // Warmup
         for (int i = 0; i < WarmupIterations; i++)
@@ -123,13 +123,13 @@ public class QueryPerformanceTests
         for (int i = 0; i < 1000; i++)
         {
             var entity = _world.CreateEntity();
-            _world.AddComponent(entity, new Position(i, i, i));
+            _world.AddComponent(entity, new Purlieu.Ecs.Core.Position(i, i, i));
         }
 
         // Warmup
         for (int i = 0; i < WarmupIterations; i++)
         {
-            var q = _world.Query().With<Position>().With<Velocity>().Without<Health>();
+            var q = _world.Query().With<Purlieu.Ecs.Core.Position>().With<Purlieu.Ecs.Core.Velocity>().Without<Health>();
         }
 
         // Measure query construction time
@@ -137,8 +137,8 @@ public class QueryPerformanceTests
         for (int i = 0; i < 10000; i++)
         {
             var query = _world.Query()
-                .With<Position>()
-                .With<Velocity>()
+                .With<Purlieu.Ecs.Core.Position>()
+                .With<Purlieu.Ecs.Core.Velocity>()
                 .Without<Health>()
                 .Without<Enemy>();
         }
@@ -166,10 +166,10 @@ public class QueryPerformanceTests
             for (int i = 0; i < entityCounts[test]; i++)
             {
                 var entity = world.CreateEntity();
-                world.AddComponent(entity, new Position(i, i, i));
+                world.AddComponent(entity, new Purlieu.Ecs.Core.Position(i, i, i));
             }
 
-            var query = world.Query().With<Position>();
+            var query = world.Query().With<Purlieu.Ecs.Core.Position>();
 
             // Warmup
             for (int i = 0; i < WarmupIterations; i++)
@@ -187,7 +187,7 @@ public class QueryPerformanceTests
                 int count = 0;
                 foreach (var chunk in query.Chunks())
                 {
-                    var positions = chunk.GetSpan<Position>();
+                    var positions = chunk.GetSpan<Purlieu.Ecs.Core.Position>();
                     for (int i = 0; i < positions.Length; i++)
                     {
                         count += (int)positions[i].X;
@@ -216,14 +216,14 @@ public class QueryPerformanceTests
         for (int i = 0; i < 5000; i++)
         {
             var entity = _world.CreateEntity();
-            _world.AddComponent(entity, new Position(i, i, i));
+            _world.AddComponent(entity, new Purlieu.Ecs.Core.Position(i, i, i));
             if (i % 2 == 0)
-                _world.AddComponent(entity, new Velocity(i, i, i));
+                _world.AddComponent(entity, new Purlieu.Ecs.Core.Velocity(i, i, i));
         }
 
-        var query1 = _world.Query().With<Position>();
-        var query2 = _world.Query().With<Position>().With<Velocity>();
-        var query3 = _world.Query().With<Position>().Without<Velocity>();
+        var query1 = _world.Query().With<Purlieu.Ecs.Core.Position>();
+        var query2 = _world.Query().With<Purlieu.Ecs.Core.Position>().With<Purlieu.Ecs.Core.Velocity>();
+        var query3 = _world.Query().With<Purlieu.Ecs.Core.Position>().Without<Purlieu.Ecs.Core.Velocity>();
 
         // Warmup
         for (int i = 0; i < WarmupIterations; i++)
@@ -305,10 +305,10 @@ public class QueryPerformanceTests
         for (int i = 0; i < entityCount; i++)
         {
             var entity = _world.CreateEntity();
-            _world.AddComponent(entity, new Position(i, i, i));
+            _world.AddComponent(entity, new Purlieu.Ecs.Core.Position(i, i, i));
         }
 
-        var query = _world.Query().With<Position>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>();
 
         // Warmup
         foreach (var chunk in query.Chunks())
@@ -322,7 +322,7 @@ public class QueryPerformanceTests
         {
             foreach (var chunk in query.Chunks())
             {
-                var positions = chunk.GetSpan<Position>();
+                var positions = chunk.GetSpan<Purlieu.Ecs.Core.Position>();
                 for (int i = 0; i < positions.Length; i++)
                 {
                     _ = positions[i].X;

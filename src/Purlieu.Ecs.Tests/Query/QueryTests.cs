@@ -36,19 +36,19 @@ public class QueryTests
         var entity2 = _world.CreateEntity();
         var entity3 = _world.CreateEntity();
 
-        _world.AddComponent(entity1, new Position(1, 2, 3));
-        _world.AddComponent(entity2, new Position(4, 5, 6));
-        _world.AddComponent(entity3, new Velocity(1f, 2f, 3f)); // Different component
+        _world.AddComponent(entity1, new Purlieu.Ecs.Core.Position(1, 2, 3));
+        _world.AddComponent(entity2, new Purlieu.Ecs.Core.Position(4, 5, 6));
+        _world.AddComponent(entity3, new Purlieu.Ecs.Core.Velocity(1f, 2f, 3f)); // Different component
 
         // Act
-        var query = _world.Query().With<Position>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>();
         var chunks = query.Chunks().ToList();
 
         // Assert
         chunks.Should().HaveCount(1);
         chunks[0].Count.Should().Be(2);
 
-        var positions = chunks[0].GetSpan<Position>();
+        var positions = chunks[0].GetSpan<Purlieu.Ecs.Core.Position>();
         positions.Length.Should().Be(2);
     }
 
@@ -60,13 +60,13 @@ public class QueryTests
         var entity2 = _world.CreateEntity();
         var entity3 = _world.CreateEntity();
 
-        _world.AddComponent(entity1, new Position(1, 2, 3));
-        _world.AddComponent(entity2, new Position(4, 5, 6));
-        _world.AddComponent(entity2, new Velocity(1f, 2f, 3f)); // entity2 has both
-        _world.AddComponent(entity3, new Velocity(4f, 5f, 6f)); // entity3 only velocity
+        _world.AddComponent(entity1, new Purlieu.Ecs.Core.Position(1, 2, 3));
+        _world.AddComponent(entity2, new Purlieu.Ecs.Core.Position(4, 5, 6));
+        _world.AddComponent(entity2, new Purlieu.Ecs.Core.Velocity(1f, 2f, 3f)); // entity2 has both
+        _world.AddComponent(entity3, new Purlieu.Ecs.Core.Velocity(4f, 5f, 6f)); // entity3 only velocity
 
         // Act - query for Position but not Velocity
-        var query = _world.Query().With<Position>().Without<Velocity>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>().Without<Purlieu.Ecs.Core.Velocity>();
         var chunks = query.Chunks().ToList();
 
         // Assert - should only find entity1
@@ -82,17 +82,17 @@ public class QueryTests
         var entity2 = _world.CreateEntity();
         var entity3 = _world.CreateEntity();
 
-        _world.AddComponent(entity1, new Position(1, 2, 3));
-        _world.AddComponent(entity1, new Velocity(1f, 2f, 3f));
+        _world.AddComponent(entity1, new Purlieu.Ecs.Core.Position(1, 2, 3));
+        _world.AddComponent(entity1, new Purlieu.Ecs.Core.Velocity(1f, 2f, 3f));
 
-        _world.AddComponent(entity2, new Position(4, 5, 6));
+        _world.AddComponent(entity2, new Purlieu.Ecs.Core.Position(4, 5, 6));
         // entity2 missing Velocity
 
-        _world.AddComponent(entity3, new Velocity(7f, 8f, 9f));
+        _world.AddComponent(entity3, new Purlieu.Ecs.Core.Velocity(7f, 8f, 9f));
         // entity3 missing Position
 
         // Act
-        var query = _world.Query().With<Position>().With<Velocity>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>().With<Purlieu.Ecs.Core.Velocity>();
         var chunks = query.Chunks().ToList();
 
         // Assert - only entity1 has both components
@@ -108,19 +108,19 @@ public class QueryTests
         var entity2 = _world.CreateEntity();
         var entity3 = _world.CreateEntity();
 
-        _world.AddComponent(entity1, new Position(1, 2, 3));
-        _world.AddComponent(entity1, new Velocity(1f, 2f, 3f));
+        _world.AddComponent(entity1, new Purlieu.Ecs.Core.Position(1, 2, 3));
+        _world.AddComponent(entity1, new Purlieu.Ecs.Core.Velocity(1f, 2f, 3f));
 
-        _world.AddComponent(entity2, new Position(4, 5, 6));
-        _world.AddComponent(entity2, new Velocity(4f, 5f, 6f));
+        _world.AddComponent(entity2, new Purlieu.Ecs.Core.Position(4, 5, 6));
+        _world.AddComponent(entity2, new Purlieu.Ecs.Core.Velocity(4f, 5f, 6f));
         _world.AddComponent(entity2, new Health(100, 100));
 
-        _world.AddComponent(entity3, new Position(7, 8, 9));
+        _world.AddComponent(entity3, new Purlieu.Ecs.Core.Position(7, 8, 9));
 
         // Act - want Position and Velocity, but not Health
         var query = _world.Query()
-            .With<Position>()
-            .With<Velocity>()
+            .With<Purlieu.Ecs.Core.Position>()
+            .With<Purlieu.Ecs.Core.Velocity>()
             .Without<Health>();
 
         var chunks = query.Chunks().ToList();
@@ -143,43 +143,43 @@ public class QueryTests
         // Archetype 1: Position only (entities 0-2)
         for (int i = 0; i < 3; i++)
         {
-            _world.AddComponent(entities[i], new Position(i, i, i));
+            _world.AddComponent(entities[i], new Purlieu.Ecs.Core.Position(i, i, i));
         }
 
         // Archetype 2: Position + Velocity (entities 3-5)
         for (int i = 3; i < 6; i++)
         {
-            _world.AddComponent(entities[i], new Position(i, i, i));
-            _world.AddComponent(entities[i], new Velocity(i, i, i));
+            _world.AddComponent(entities[i], new Purlieu.Ecs.Core.Position(i, i, i));
+            _world.AddComponent(entities[i], new Purlieu.Ecs.Core.Velocity(i, i, i));
         }
 
         // Archetype 3: Position + Velocity + Health (entities 6-8)
         for (int i = 6; i < 9; i++)
         {
-            _world.AddComponent(entities[i], new Position(i, i, i));
-            _world.AddComponent(entities[i], new Velocity(i, i, i));
+            _world.AddComponent(entities[i], new Purlieu.Ecs.Core.Position(i, i, i));
+            _world.AddComponent(entities[i], new Purlieu.Ecs.Core.Velocity(i, i, i));
             _world.AddComponent(entities[i], new Health(i * 10, i * 10));
         }
 
         // Archetype 4: Velocity only (entity 9)
-        _world.AddComponent(entities[9], new Velocity(9, 9, 9));
+        _world.AddComponent(entities[9], new Purlieu.Ecs.Core.Velocity(9, 9, 9));
 
         // Act & Assert different queries
 
         // Query 1: All entities with Position (should be 0-8)
-        var positionQuery = _world.Query().With<Position>();
+        var positionQuery = _world.Query().With<Purlieu.Ecs.Core.Position>();
         var positionChunks = positionQuery.Chunks().ToList();
         var positionCount = positionChunks.Sum(c => c.Count);
         positionCount.Should().Be(9);
 
         // Query 2: Entities with Position and Velocity (should be 3-8)
-        var posVelQuery = _world.Query().With<Position>().With<Velocity>();
+        var posVelQuery = _world.Query().With<Purlieu.Ecs.Core.Position>().With<Purlieu.Ecs.Core.Velocity>();
         var posVelChunks = posVelQuery.Chunks().ToList();
         var posVelCount = posVelChunks.Sum(c => c.Count);
         posVelCount.Should().Be(6);
 
         // Query 3: Entities with Position but without Health (should be 0-5)
-        var posNoHealthQuery = _world.Query().With<Position>().Without<Health>();
+        var posNoHealthQuery = _world.Query().With<Purlieu.Ecs.Core.Position>().Without<Health>();
         var posNoHealthChunks = posNoHealthQuery.Chunks().ToList();
         var posNoHealthCount = posNoHealthChunks.Sum(c => c.Count);
         posNoHealthCount.Should().Be(6);
@@ -193,16 +193,16 @@ public class QueryTests
         for (int i = 0; i < entities.Length; i++)
         {
             entities[i] = _world.CreateEntity();
-            _world.AddComponent(entities[i], new Position(i, i * 2, i * 3));
+            _world.AddComponent(entities[i], new Purlieu.Ecs.Core.Position(i, i * 2, i * 3));
 
             if (i % 2 == 0)
             {
-                _world.AddComponent(entities[i], new Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
+                _world.AddComponent(entities[i], new Purlieu.Ecs.Core.Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
             }
         }
 
         // Act - run query multiple times
-        var query = _world.Query().With<Position>().With<Velocity>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>().With<Purlieu.Ecs.Core.Velocity>();
 
         var results1 = query.Chunks().ToList();
         var results2 = query.Chunks().ToList();
@@ -227,8 +227,8 @@ public class QueryTests
         // Arrange
         var entity1 = _world.CreateEntity();
         var entity2 = _world.CreateEntity();
-        _world.AddComponent(entity1, new Position(1, 2, 3));
-        _world.AddComponent(entity2, new Velocity(1f, 2f, 3f));
+        _world.AddComponent(entity1, new Purlieu.Ecs.Core.Position(1, 2, 3));
+        _world.AddComponent(entity2, new Purlieu.Ecs.Core.Velocity(1f, 2f, 3f));
 
         // Act - query with no filters
         var query = _world.Query();
@@ -243,7 +243,7 @@ public class QueryTests
     public void API_QueryOnEmptyWorld_ShouldReturnNoChunks()
     {
         // Act
-        var query = _world.Query().With<Position>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>();
         var chunks = query.Chunks().ToList();
 
         // Assert

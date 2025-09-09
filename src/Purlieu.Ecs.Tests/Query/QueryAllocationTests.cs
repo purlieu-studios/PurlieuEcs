@@ -22,11 +22,11 @@ public class QueryAllocationTests
         for (int i = 0; i < 100; i++)
         {
             var entity = _world.CreateEntity();
-            _world.AddComponent(entity, new Position(i, i * 2, i * 3));
+            _world.AddComponent(entity, new Purlieu.Ecs.Core.Position(i, i * 2, i * 3));
 
             if (i % 2 == 0)
             {
-                _world.AddComponent(entity, new Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
+                _world.AddComponent(entity, new Purlieu.Ecs.Core.Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
             }
 
             if (i % 3 == 0)
@@ -40,7 +40,7 @@ public class QueryAllocationTests
     public void ALLOC_ChunkIteration_ZeroAllocations()
     {
         // Warmup
-        var query = _world.Query().With<Position>().With<Velocity>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>().With<Purlieu.Ecs.Core.Velocity>();
         _ = query.Chunks().ToList();
 
         var startMemory = GC.GetTotalMemory(true);
@@ -50,8 +50,8 @@ public class QueryAllocationTests
         {
             foreach (var chunk in query.Chunks())
             {
-                var positions = chunk.GetSpan<Position>();
-                var velocities = chunk.GetSpan<Velocity>();
+                var positions = chunk.GetSpan<Purlieu.Ecs.Core.Position>();
+                var velocities = chunk.GetSpan<Purlieu.Ecs.Core.Velocity>();
 
                 for (int i = 0; i < chunk.Count; i++)
                 {
@@ -81,8 +81,8 @@ public class QueryAllocationTests
         for (int i = 0; i < 100; i++)
         {
             var query = _world.Query()
-                .With<Position>()
-                .With<Velocity>()
+                .With<Purlieu.Ecs.Core.Position>()
+                .With<Purlieu.Ecs.Core.Velocity>()
                 .Without<Health>();
 
             // Don't execute - just construction
@@ -97,7 +97,7 @@ public class QueryAllocationTests
     [Test]
     public void ALLOC_RepeatedQueryExecution_ShouldNotGrowMemory()
     {
-        var query = _world.Query().With<Position>();
+        var query = _world.Query().With<Purlieu.Ecs.Core.Position>();
 
         // Warmup
         _ = query.Chunks().ToList();
@@ -110,7 +110,7 @@ public class QueryAllocationTests
             var chunks = query.Chunks().ToList();
             foreach (var chunk in chunks)
             {
-                var positions = chunk.GetSpan<Position>();
+                var positions = chunk.GetSpan<Purlieu.Ecs.Core.Position>();
                 for (int j = 0; j < positions.Length; j++)
                 {
                     _ = positions[j].X;

@@ -21,7 +21,7 @@ public readonly struct ComponentSignature : IEquatable<ComponentSignature>
         var typeId = ComponentTypeId<T>.Id;
         if (typeId >= 64)
             throw new InvalidOperationException($"Component type ID {typeId} exceeds maximum of 63");
-        
+
         return new ComponentSignature(_bits | (1UL << typeId));
     }
 
@@ -31,7 +31,7 @@ public readonly struct ComponentSignature : IEquatable<ComponentSignature>
         var typeId = ComponentTypeId<T>.Id;
         if (typeId >= 64)
             throw new InvalidOperationException($"Component type ID {typeId} exceeds maximum of 63");
-        
+
         return new ComponentSignature(_bits & ~(1UL << typeId));
     }
 
@@ -41,7 +41,7 @@ public readonly struct ComponentSignature : IEquatable<ComponentSignature>
         var typeId = ComponentTypeId<T>.Id;
         if (typeId >= 64)
             return false;
-        
+
         return (_bits & (1UL << typeId)) != 0;
     }
 
@@ -108,14 +108,14 @@ public readonly struct ComponentSignature : IEquatable<ComponentSignature>
     {
         if (IsEmpty)
             return "ComponentSignature(empty)";
-        
+
         var components = new List<int>();
         for (int i = 0; i < 64; i++)
         {
             if ((_bits & (1UL << i)) != 0)
                 components.Add(i);
         }
-        
+
         return $"ComponentSignature({string.Join(",", components)})";
     }
 
@@ -143,13 +143,13 @@ public static class ComponentTypeRegistry
     public static int GetOrAssignId<T>() where T : struct
     {
         var type = typeof(T);
-        
+
         if (_typeToId.TryGetValue(type, out var existingId))
             return existingId;
-        
+
         if (_nextId >= 64)
             throw new InvalidOperationException("Maximum of 64 component types supported");
-        
+
         var newId = _nextId++;
         _typeToId[type] = newId;
         return newId;

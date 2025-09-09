@@ -7,11 +7,11 @@ namespace Purlieu.Ecs.Core;
 public sealed class Chunk
 {
     public const int DefaultCapacity = 512;
-    
+
     private readonly Entity[] _entities;
     private readonly Dictionary<Type, Array> _componentArrays;
     private int _count;
-    
+
     public Chunk(ComponentSignature signature, int capacity = DefaultCapacity)
     {
         Signature = signature;
@@ -38,7 +38,7 @@ public sealed class Chunk
     {
         if (index < 0 || index >= _count)
             throw new ArgumentOutOfRangeException(nameof(index));
-        
+
         return _entities[index];
     }
 
@@ -46,17 +46,17 @@ public sealed class Chunk
     public Span<T> GetSpan<T>() where T : struct
     {
         var componentType = typeof(T);
-        
+
         if (!_componentArrays.TryGetValue(componentType, out var array))
         {
             // Create array on first access if this component is in the signature
             if (!Signature.Has<T>())
                 throw new InvalidOperationException($"Component type {typeof(T).Name} is not part of this chunk's signature");
-            
+
             array = new T[Capacity];
             _componentArrays[componentType] = array;
         }
-        
+
         return ((T[])array).AsSpan(0, _count);
     }
 
@@ -65,7 +65,7 @@ public sealed class Chunk
     {
         if (index < 0 || index >= _count)
             throw new ArgumentOutOfRangeException(nameof(index));
-        
+
         var span = GetSpan<T>();
         return ref span[index];
     }
@@ -74,11 +74,11 @@ public sealed class Chunk
     {
         if (IsFull)
             throw new InvalidOperationException("Chunk is full");
-        
+
         var index = _count;
         _entities[index] = entity;
         _count++;
-        
+
         return index;
     }
 
@@ -86,21 +86,21 @@ public sealed class Chunk
     {
         if (index < 0 || index >= _count)
             throw new ArgumentOutOfRangeException(nameof(index));
-        
+
         // Move last entity to the removed slot (swap-remove)
         var lastIndex = _count - 1;
-        
+
         if (index != lastIndex)
         {
             _entities[index] = _entities[lastIndex];
-            
+
             // Move component data for all component types
             foreach (var (componentType, array) in _componentArrays)
             {
                 Array.Copy(array, lastIndex, array, index, 1);
             }
         }
-        
+
         _count--;
     }
 
@@ -119,7 +119,7 @@ public sealed class Chunk
     {
         if (index < 0 || index >= _count)
             throw new ArgumentOutOfRangeException(nameof(index));
-        
+
         var span = GetSpan<T>();
         span[index] = component;
     }
@@ -127,12 +127,12 @@ public sealed class Chunk
     public void EnsureComponentArray<T>() where T : struct
     {
         var componentType = typeof(T);
-        
+
         if (!_componentArrays.ContainsKey(componentType))
         {
             if (!Signature.Has<T>())
                 throw new InvalidOperationException($"Component type {typeof(T).Name} is not part of this chunk's signature");
-            
+
             _componentArrays[componentType] = new T[Capacity];
         }
     }

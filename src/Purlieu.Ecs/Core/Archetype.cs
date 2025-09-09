@@ -32,7 +32,7 @@ public sealed class Archetype
     {
         if (!_entityLocations.TryGetValue(entity, out var location))
             throw new ArgumentException($"Entity {entity} not found in archetype");
-        
+
         return (_chunks[location.chunkIndex], location.entityIndex);
     }
 
@@ -44,7 +44,7 @@ public sealed class Archetype
         // Find or create a chunk with space
         Chunk targetChunk = null!;
         int chunkIndex = -1;
-        
+
         for (int i = 0; i < _chunks.Count; i++)
         {
             if (!_chunks[i].IsFull)
@@ -54,7 +54,7 @@ public sealed class Archetype
                 break;
             }
         }
-        
+
         if (targetChunk == null)
         {
             // Create new chunk
@@ -62,10 +62,10 @@ public sealed class Archetype
             _chunks.Add(targetChunk);
             chunkIndex = _chunks.Count - 1;
         }
-        
+
         var entityIndex = targetChunk.AddEntity(entity);
         _entityLocations[entity] = (chunkIndex, entityIndex);
-        
+
         return entityIndex;
     }
 
@@ -73,34 +73,34 @@ public sealed class Archetype
     {
         if (!_entityLocations.TryGetValue(entity, out var location))
             throw new ArgumentException($"Entity {entity} not found in archetype");
-        
+
         var chunk = _chunks[location.chunkIndex];
         var entityIndex = location.entityIndex;
-        
+
         // Get the entity that will be moved to fill the gap (if any)
         Entity? movedEntity = null;
         if (entityIndex < chunk.Count - 1)
         {
             movedEntity = chunk.GetEntity(chunk.Count - 1);
         }
-        
+
         // Remove from chunk (this moves the last entity to the removed slot)
         chunk.RemoveEntity(entityIndex);
-        
+
         // Update location tracking
         _entityLocations.Remove(entity);
-        
+
         if (movedEntity.HasValue)
         {
             // Update the location of the moved entity
             _entityLocations[movedEntity.Value] = (location.chunkIndex, entityIndex);
         }
-        
+
         // Remove empty chunks (optional optimization)
         if (chunk.IsEmpty && _chunks.Count > 1)
         {
             _chunks.RemoveAt(location.chunkIndex);
-            
+
             // Update chunk indices for all entities in chunks after the removed one
             for (int i = location.chunkIndex; i < _chunks.Count; i++)
             {

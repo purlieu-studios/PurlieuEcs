@@ -4,7 +4,7 @@ namespace Purlieu.Ecs.Tests.Core;
 public struct Position
 {
     public float X, Y, Z;
-    
+
     public Position(float x, float y, float z = 0)
     {
         X = x;
@@ -18,7 +18,7 @@ public struct Position
 public struct Velocity
 {
     public float X, Y, Z;
-    
+
     public Velocity(float x, float y, float z = 0)
     {
         X = x;
@@ -32,7 +32,7 @@ public struct Velocity
 public struct Health
 {
     public int Current, Max;
-    
+
     public Health(int current, int max)
     {
         Current = current;
@@ -45,7 +45,7 @@ public struct Health
 public struct Name
 {
     public string Value;
-    
+
     public Name(string value)
     {
         Value = value;

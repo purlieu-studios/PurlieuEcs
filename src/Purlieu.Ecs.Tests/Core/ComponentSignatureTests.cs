@@ -18,7 +18,7 @@ public class ComponentSignatureTests
     public void API_EmptySignature_ShouldHaveZeroBits()
     {
         var signature = ComponentSignature.Empty;
-        
+
         signature.IsEmpty.Should().BeTrue();
         signature.ComponentCount.Should().Be(0);
         ((ulong)signature).Should().Be(0);
@@ -28,7 +28,7 @@ public class ComponentSignatureTests
     public void API_WithComponent_ShouldSetCorrectBit()
     {
         var signature = ComponentSignature.Empty.With<Position>();
-        
+
         signature.IsEmpty.Should().BeFalse();
         signature.ComponentCount.Should().Be(1);
         signature.Has<Position>().Should().BeTrue();
@@ -42,7 +42,7 @@ public class ComponentSignatureTests
             .With<Position>()
             .With<Velocity>()
             .With<Health>();
-        
+
         signature.ComponentCount.Should().Be(3);
         signature.Has<Position>().Should().BeTrue();
         signature.Has<Velocity>().Should().BeTrue();
@@ -57,7 +57,7 @@ public class ComponentSignatureTests
             .With<Position>()
             .With<Velocity>()
             .Without<Position>();
-        
+
         signature.ComponentCount.Should().Be(1);
         signature.Has<Position>().Should().BeFalse();
         signature.Has<Velocity>().Should().BeTrue();
@@ -70,17 +70,17 @@ public class ComponentSignatureTests
             .With<Position>()
             .With<Velocity>()
             .With<Health>();
-        
+
         var required = ComponentSignature.Empty
             .With<Position>()
             .With<Velocity>();
-        
+
         signature.HasAll(required).Should().BeTrue();
-        
+
         var notRequired = ComponentSignature.Empty
             .With<Position>()
             .With<Name>();
-        
+
         signature.HasAll(notRequired).Should().BeFalse();
     }
 
@@ -90,17 +90,17 @@ public class ComponentSignatureTests
         var signature = ComponentSignature.Empty
             .With<Position>()
             .With<Velocity>();
-        
+
         var someMatching = ComponentSignature.Empty
             .With<Position>()
             .With<Name>();
-        
+
         signature.HasAny(someMatching).Should().BeTrue();
-        
+
         var noneMatching = ComponentSignature.Empty
             .With<Health>()
             .With<Name>();
-        
+
         signature.HasAny(noneMatching).Should().BeFalse();
     }
 
@@ -110,17 +110,17 @@ public class ComponentSignatureTests
         var signature = ComponentSignature.Empty
             .With<Position>()
             .With<Velocity>();
-        
+
         var noOverlap = ComponentSignature.Empty
             .With<Health>()
             .With<Name>();
-        
+
         signature.HasNone(noOverlap).Should().BeTrue();
-        
+
         var hasOverlap = ComponentSignature.Empty
             .With<Position>()
             .With<Name>();
-        
+
         signature.HasNone(hasOverlap).Should().BeFalse();
     }
 
@@ -130,15 +130,15 @@ public class ComponentSignatureTests
         var signature1 = ComponentSignature.Empty
             .With<Position>()
             .With<Velocity>();
-        
+
         var signature2 = ComponentSignature.Empty
             .With<Velocity>()
             .With<Position>();
-        
+
         var signature3 = ComponentSignature.Empty
             .With<Position>()
             .With<Health>();
-        
+
         signature1.Should().Be(signature2);
         signature1.Should().NotBe(signature3);
         (signature1 == signature2).Should().BeTrue();
@@ -151,11 +151,11 @@ public class ComponentSignatureTests
         var signature1 = ComponentSignature.Empty
             .With<Position>()
             .With<Velocity>();
-        
+
         var signature2 = ComponentSignature.Empty
             .With<Velocity>()
             .With<Position>();
-        
+
         signature1.GetHashCode().Should().Be(signature2.GetHashCode());
     }
 
@@ -166,7 +166,7 @@ public class ComponentSignatureTests
         var signature = ComponentSignature.Empty
             .With<Position>()
             .With<Velocity>();
-        
+
         emptySignature.ToString().Should().Contain("empty");
         signature.ToString().Should().Contain("ComponentSignature");
         signature.ToString().Should().NotBeEmpty();
@@ -177,9 +177,9 @@ public class ComponentSignatureTests
     {
         var signature = ComponentSignature.Empty.With<Position>();
         ulong bits = signature;
-        
+
         bits.Should().NotBe(0);
-        
+
         var restored = (ComponentSignature)bits;
         restored.Should().Be(signature);
     }
@@ -190,13 +190,13 @@ public class ComponentSignatureTests
         // Component type IDs should be deterministic within a session
         var signature1 = ComponentSignature.Empty.With<Position>();
         var signature2 = ComponentSignature.Empty.With<Position>();
-        
+
         signature1.Should().Be(signature2);
-        
+
         // Different types should have different IDs
         var positionSig = ComponentSignature.Empty.With<Position>();
         var velocitySig = ComponentSignature.Empty.With<Velocity>();
-        
+
         positionSig.Should().NotBe(velocitySig);
     }
 
@@ -206,7 +206,7 @@ public class ComponentSignatureTests
         // This test would be hard to implement without creating 64+ types
         // Instead, test the error condition directly
         var act = () => ComponentSignature.Empty.With<Position>().Has<Position>();
-        
+
         act.Should().NotThrow(); // Should work normally for valid component counts
     }
 
@@ -215,7 +215,7 @@ public class ComponentSignatureTests
     {
         // Test that signature operations don't allocate
         var startMemory = GC.GetTotalMemory(true);
-        
+
         for (int i = 0; i < 1000; i++)
         {
             var signature = ComponentSignature.Empty
@@ -223,15 +223,15 @@ public class ComponentSignatureTests
                 .With<Velocity>()
                 .Without<Health>()
                 .With<Name>();
-            
+
             var hasPosition = signature.Has<Position>();
             var count = signature.ComponentCount;
             var isEmpty = signature.IsEmpty;
         }
-        
+
         var endMemory = GC.GetTotalMemory(false);
         var allocated = endMemory - startMemory;
-        
+
         // Allow some tolerance for GC variations
         allocated.Should().BeLessThan(1024, "Signature operations should not allocate significant memory");
     }
@@ -242,11 +242,11 @@ public class ComponentSignatureTests
         var positionId = ComponentTypeId<Position>.Id;
         var velocityId = ComponentTypeId<Velocity>.Id;
         var healthId = ComponentTypeId<Health>.Id;
-        
+
         positionId.Should().NotBe(velocityId);
         velocityId.Should().NotBe(healthId);
         positionId.Should().NotBe(healthId);
-        
+
         // IDs should be in valid range
         positionId.Should().BeInRange(0, 63);
         velocityId.Should().BeInRange(0, 63);

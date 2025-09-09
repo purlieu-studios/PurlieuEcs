@@ -32,13 +32,13 @@ public sealed class World
         }
 
         var entity = new Entity(id, 1); // Start with version 1
-        
+
         // Add to empty archetype initially
         var emptySignature = ComponentSignature.Empty;
         var archetype = GetOrCreateArchetype(emptySignature);
         archetype.AddEntity(entity);
         _entityToArchetype[entity] = archetype;
-        
+
         return entity;
     }
 
@@ -49,7 +49,7 @@ public sealed class World
 
         archetype.RemoveEntity(entity);
         _entityToArchetype.Remove(entity);
-        
+
         // Add ID to free list for reuse (with incremented version)
         _freeEntityIds.Enqueue(entity.Id);
     }
@@ -66,7 +66,7 @@ public sealed class World
             throw new ArgumentException($"Entity {entity} does not exist");
 
         var newSignature = currentArchetype.Signature.With<T>();
-        
+
         // If signature hasn't changed, just update the component
         if (newSignature == currentArchetype.Signature)
         {
@@ -88,7 +88,7 @@ public sealed class World
             return; // Component not present
 
         var newSignature = currentArchetype.Signature.Without<T>();
-        
+
         // Move entity to new archetype
         MoveEntityToArchetype(entity, currentArchetype, newSignature);
     }
@@ -152,22 +152,22 @@ public sealed class World
 
         // Copy all existing components except the one being added/removed
         var oldSignature = fromArchetype.Signature;
-        
+
         // Remove from old archetype
         fromArchetype.RemoveEntity(entity);
-        
+
         // Add to new archetype
         toArchetype.AddEntity(entity);
-        
+
         // Copy shared components
         CopySharedComponents(entity, fromArchetype, toArchetype, oldSignature, newSignature);
-        
+
         // Set new component if adding
         if (newSignature.Has<T>() && !oldSignature.Has<T>())
         {
             toArchetype.SetComponent(entity, newComponent);
         }
-        
+
         // Update entity mapping
         _entityToArchetype[entity] = toArchetype;
     }
@@ -177,19 +177,19 @@ public sealed class World
         MoveEntityToArchetype<byte>(entity, fromArchetype, newSignature);
     }
 
-    private void CopySharedComponents(Entity entity, Archetype fromArchetype, Archetype toArchetype, 
+    private void CopySharedComponents(Entity entity, Archetype fromArchetype, Archetype toArchetype,
         ComponentSignature oldSignature, ComponentSignature newSignature)
     {
         // For now, we'll implement a limited version that copies known component types
         // In a full implementation, this would use reflection or source generation
-        
+
         // For the MVP, we'll leave component copying as a TODO
         // This requires a more sophisticated approach with either:
         // 1. A component registry with type information
         // 2. Reflection-based copying
         // 3. Source generation
         // For now, components will need to be re-added after migration
-        
+
         // Note: This is a temporary implementation. A production system would use:
         // 1. A component registry with generic copy delegates
         // 2. Source generation to create type-safe copy methods

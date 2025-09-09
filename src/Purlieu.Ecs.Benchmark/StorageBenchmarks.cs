@@ -24,13 +24,13 @@ public class StorageBenchmarks
         ComponentTypeRegistry.Reset();
         _world = new World();
         _entities = new Entity[EntityCount];
-        
+
         _signature = ComponentSignature.Empty
             .With<Position>()
             .With<Velocity>();
-        
+
         _archetype = new Archetype(_signature);
-        
+
         // Pre-create entities for benchmarks
         for (int i = 0; i < EntityCount; i++)
         {
@@ -106,7 +106,7 @@ public class StorageBenchmarks
         var required = ComponentSignature.Empty
             .With<Position>()
             .With<Velocity>();
-        
+
         return _signature.HasAll(required);
     }
 
@@ -124,7 +124,7 @@ public class StorageBenchmarks
         var entity = new Entity(1, 1);
         _archetype.AddEntity(entity);
         _archetype.SetComponent(entity, new Position(10, 20, 30));
-        
+
         return _archetype.GetComponent<Position>(entity);
     }
 
@@ -142,10 +142,10 @@ public class StorageBenchmarks
     {
         var chunk = new Chunk(_signature);
         chunk.AddEntity(new Entity(1, 1));
-        
+
         var positions = chunk.GetSpan<Position>();
         positions[0] = new Position(10, 20, 30);
-        
+
         var retrieved = positions[0];
     }
 
@@ -154,12 +154,12 @@ public class StorageBenchmarks
     {
         var world = new World();
         var entities = new Entity[1000];
-        
+
         for (int i = 0; i < entities.Length; i++)
         {
             entities[i] = world.CreateEntity();
         }
-        
+
         return entities;
     }
 
@@ -168,7 +168,7 @@ public class StorageBenchmarks
     {
         var world = new World();
         var entities = new Entity[1000];
-        
+
         for (int i = 0; i < entities.Length; i++)
         {
             entities[i] = world.CreateEntity();
@@ -182,14 +182,14 @@ public class StorageBenchmarks
     {
         var world = new World();
         var entities = new Entity[1000];
-        
+
         // Setup
         for (int i = 0; i < entities.Length; i++)
         {
             entities[i] = world.CreateEntity();
             world.AddComponent(entities[i], new Position(i, i * 2, i * 3));
         }
-        
+
         // Iterate and sum
         float sum = 0;
         foreach (var entity in entities)
@@ -197,7 +197,7 @@ public class StorageBenchmarks
             var position = world.GetComponent<Position>(entity);
             sum += position.X + position.Y + position.Z;
         }
-        
+
         return sum;
     }
 
@@ -206,13 +206,13 @@ public class StorageBenchmarks
     {
         var world = new World();
         var entity = world.CreateEntity();
-        
+
         // Add components one by one (triggers migrations)
         world.AddComponent(entity, new Position(1, 2, 3));
         world.AddComponent(entity, new Velocity(0.1f, 0.2f, 0.3f));
         world.AddComponent(entity, new Health(100, 100));
         world.AddComponent(entity, new Name("Test"));
-        
+
         // Remove components (triggers migrations)
         world.RemoveComponent<Name>(entity);
         world.RemoveComponent<Health>(entity);
@@ -223,20 +223,20 @@ public class StorageBenchmarks
     {
         var world = new World();
         var archetypes = new Archetype[100];
-        
+
         // Create various archetype combinations
         for (int i = 0; i < archetypes.Length; i++)
         {
             var signature = ComponentSignature.Empty;
-            
+
             if (i % 2 == 0) signature = signature.With<Position>();
             if (i % 3 == 0) signature = signature.With<Velocity>();
             if (i % 5 == 0) signature = signature.With<Health>();
             if (i % 7 == 0) signature = signature.With<Name>();
-            
+
             archetypes[i] = world.GetOrCreateArchetype(signature);
         }
-        
+
         return archetypes;
     }
 
@@ -244,7 +244,7 @@ public class StorageBenchmarks
     public void BENCH_ChunkIteration()
     {
         var archetype = new Archetype(_signature);
-        
+
         // Fill with entities
         for (int i = 0; i < 1000; i++)
         {
@@ -253,14 +253,14 @@ public class StorageBenchmarks
             archetype.SetComponent(entity, new Position(i, i * 2, i * 3));
             archetype.SetComponent(entity, new Velocity(i * 0.1f, i * 0.2f, i * 0.3f));
         }
-        
+
         // Iterate through chunks
         float sum = 0;
         foreach (var chunk in archetype.Chunks)
         {
             var positions = chunk.GetSpan<Position>();
             var velocities = chunk.GetSpan<Velocity>();
-            
+
             for (int i = 0; i < chunk.Count; i++)
             {
                 sum += positions[i].X + velocities[i].X;

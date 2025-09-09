@@ -1,4 +1,5 @@
 using Purlieu.Ecs.Core;
+using Purlieu.Ecs.Events;
 
 namespace Purlieu.Ecs.Systems;
 
@@ -37,14 +38,14 @@ public sealed class MovementSystem : ISystem
                     oldPosition.Y != newPosition.Y ||
                     oldPosition.Z != newPosition.Z)
                 {
-                    // In a full implementation, this would emit a PositionChangedIntent
-                    // For now, this demonstrates the pattern without requiring the Events system
-
-                    // Example: world.Events<PositionChangedIntent>().Publish(new PositionChangedIntent 
-                    // { 
-                    //     Entity = chunk.GetEntity(i), 
-                    //     NewPosition = newPosition 
-                    // });
+                    // Emit PositionChangedIntent for visual system consumption
+                    var intent = new PositionChangedIntent(
+                        chunk.GetEntity(i),
+                        newPosition.X, newPosition.Y, newPosition.Z,
+                        oldPosition.X, oldPosition.Y, oldPosition.Z
+                    );
+                    
+                    world.Events<PositionChangedIntent>().Publish(in intent);
                 }
             }
         }

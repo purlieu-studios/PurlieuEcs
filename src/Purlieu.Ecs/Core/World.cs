@@ -164,14 +164,14 @@ public sealed class World
         // Copy all existing components except the one being added/removed
         var oldSignature = fromArchetype.Signature;
 
-        // Remove from old archetype
-        fromArchetype.RemoveEntity(entity);
-
-        // Add to new archetype
+        // Add to new archetype first
         toArchetype.AddEntity(entity);
 
-        // Copy shared components
+        // Copy shared components while entity is still in both archetypes
         CopySharedComponents(entity, fromArchetype, toArchetype, oldSignature, newSignature);
+
+        // Remove from old archetype after copying
+        fromArchetype.RemoveEntity(entity);
 
         // Set new component if adding
         if (newSignature.Has<T>() && !oldSignature.Has<T>())
@@ -191,20 +191,12 @@ public sealed class World
     private void CopySharedComponents(Entity entity, Archetype fromArchetype, Archetype toArchetype,
         ComponentSignature oldSignature, ComponentSignature newSignature)
     {
-        // For now, we'll implement a limited version that copies known component types
-        // In a full implementation, this would use reflection or source generation
+        // Find components that exist in both signatures (shared components)
+        var sharedMask = (ulong)oldSignature & (ulong)newSignature;
+        var sharedComponents = (ComponentSignature)sharedMask;
 
-        // For the MVP, we'll leave component copying as a TODO
-        // This requires a more sophisticated approach with either:
-        // 1. A component registry with type information
-        // 2. Reflection-based copying
-        // 3. Source generation
-        // For now, components will need to be re-added after migration
-
-        // Note: This is a temporary implementation. A production system would use:
-        // 1. A component registry with generic copy delegates
-        // 2. Source generation to create type-safe copy methods
-        // 3. Reflection-based copying for flexibility (acceptable for archetype migration)
+        // Use the component registry to copy shared components efficiently
+        ComponentTypeRegistry.CopyComponentsForEntity(entity, fromArchetype, toArchetype, sharedComponents);
     }
 
     public int EntityCount => _entityToArchetype.Count;

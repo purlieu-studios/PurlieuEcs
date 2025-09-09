@@ -56,6 +56,15 @@ public readonly struct ComponentSignature : IEquatable<ComponentSignature>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool HasComponentId(int typeId)
+    {
+        if (typeId >= 64)
+            return false;
+
+        return (_bits & (1UL << typeId)) != 0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool HasAll(ComponentSignature other)
     {
         return (_bits & other._bits) == other._bits;
@@ -173,6 +182,7 @@ public static class ComponentTypeId<T> where T : struct
 public static class ComponentTypeRegistry
 {
     private static readonly Dictionary<Type, int> _typeToId = new();
+    private static readonly Dictionary<int, Action<Entity, Archetype, Archetype>> _copyDelegates = new();
     private static int _nextId = 0;
     private static int _version = 0;
 
@@ -190,6 +200,10 @@ public static class ComponentTypeRegistry
 
         var newId = _nextId++;
         _typeToId[type] = newId;
+
+        // Register copy delegate for this component type
+        RegisterCopyDelegate<T>(newId);
+
         return newId;
     }
 
@@ -214,9 +228,34 @@ public static class ComponentTypeRegistry
         return newId;
     }
 
+    private static void RegisterCopyDelegate<T>(int typeId) where T : struct
+    {
+        _copyDelegates[typeId] = (entity, fromArchetype, toArchetype) =>
+        {
+            if (fromArchetype.HasComponent<T>(entity) && toArchetype.Contains(entity))
+            {
+                var component = fromArchetype.GetComponent<T>(entity);
+                toArchetype.SetComponent(entity, component);
+            }
+        };
+    }
+
+    public static void CopyComponentsForEntity(Entity entity, Archetype fromArchetype, Archetype toArchetype,
+        ComponentSignature sharedComponents)
+    {
+        for (int i = 0; i < 64; i++)
+        {
+            if (sharedComponents.HasComponentId(i) && _copyDelegates.TryGetValue(i, out var copyDelegate))
+            {
+                copyDelegate(entity, fromArchetype, toArchetype);
+            }
+        }
+    }
+
     public static void Reset()
     {
         _typeToId.Clear();
+        _copyDelegates.Clear();
         _nextId = 0;
         _version++;
     }

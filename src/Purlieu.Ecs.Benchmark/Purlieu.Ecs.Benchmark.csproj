@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Purlieu.Ecs\Purlieu.Ecs.csproj" />
+    <ProjectReference Include="..\Purlieu.Ecs.Tests\Purlieu.Ecs.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

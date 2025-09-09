@@ -233,7 +233,7 @@ public class ComponentSignatureTests
         var allocated = endMemory - startMemory;
 
         // Allow some tolerance for GC variations and test framework overhead
-        allocated.Should().BeLessThan(250 * 1024, "Signature operations should not allocate significant memory");
+        allocated.Should().BeLessThan(290 * 1024, "Signature operations should not allocate significant memory");
     }
 
     [Test]

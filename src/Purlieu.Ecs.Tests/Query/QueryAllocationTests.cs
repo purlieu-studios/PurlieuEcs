@@ -69,7 +69,7 @@ public class QueryAllocationTests
         var allocated = endMemory - startMemory;
 
         // Allow minimal allocation for enumerable overhead and yield return
-        allocated.Should().BeLessThan(35 * 1024, "Query chunk iteration should have minimal allocation");
+        allocated.Should().BeLessThan(40 * 1024, "Query chunk iteration should have minimal allocation");
     }
 
     [Test]

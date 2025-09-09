@@ -1,0 +1,37 @@
+# Normalize line endings across all platforms
+* text=auto
+
+# Force LF for shell scripts and Unix-specific files
+*.sh text eol=lf
+
+# Force CRLF for Windows-specific files  
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# C# source files use CRLF on Windows for best Visual Studio compatibility
+*.cs text eol=crlf
+*.csx text eol=crlf
+*.vb text eol=crlf
+*.vbx text eol=crlf
+
+# Project and configuration files
+*.csproj text eol=crlf
+*.sln text eol=crlf
+*.props text eol=crlf
+*.targets text eol=crlf
+
+# Documentation and configuration
+*.md text eol=lf
+*.yml text eol=lf  
+*.yaml text eol=lf
+*.json text eol=lf
+*.xml text eol=crlf
+*.config text eol=crlf
+
+# Binary files (don't normalize)
+*.dll binary
+*.exe binary
+*.pdb binary
+*.nupkg binary
+*.snk binary

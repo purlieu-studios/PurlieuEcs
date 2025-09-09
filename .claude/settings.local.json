@@ -58,7 +58,8 @@
       "Bash(git rebase:*)",
       "Bash(git pull:*)",
       "Bash(git stash:*)",
-      "Bash(git cherry-pick:*)"
+      "Bash(git cherry-pick:*)",
+      "Bash(dotnet restore:*)"
     ],
     "deny": [],
     "ask": []

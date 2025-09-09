@@ -24,16 +24,19 @@ public sealed class MovementSystem : ISystem
             for (int i = 0; i < chunk.Count; i++)
             {
                 var oldPosition = positions[i];
+                var velocity = velocities[i];
 
                 // Update position based on velocity
-                positions[i] = new Position(
-                    oldPosition.X + velocities[i].X * deltaTime,
-                    oldPosition.Y + velocities[i].Y * deltaTime,
-                    oldPosition.Z + velocities[i].Z * deltaTime
+                var newPosition = new Position(
+                    oldPosition.X + velocity.X * deltaTime,
+                    oldPosition.Y + velocity.Y * deltaTime,
+                    oldPosition.Z + velocity.Z * deltaTime
                 );
 
+                // Set the updated position
+                chunk.SetComponent(i, in newPosition);
+
                 // BVIP pattern: emit intent only if position changed
-                var newPosition = positions[i];
                 if (oldPosition.X != newPosition.X ||
                     oldPosition.Y != newPosition.Y ||
                     oldPosition.Z != newPosition.Z)

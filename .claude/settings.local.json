@@ -53,7 +53,11 @@
       "Bash(del nul)",
       "Bash(rd:*)",
       "Bash(git init:*)",
-      "Bash(git remote add:*)"
+      "Bash(git remote add:*)",
+      "Bash(git mv:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(gh pr checks:*)"
     ],
     "deny": [],
     "ask": []

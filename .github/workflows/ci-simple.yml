@@ -1,0 +1,60 @@
+name: CI Simple
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build-check:
+    name: Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Check for projects
+      id: check
+      run: |
+        if [ -f "Purlieu.ECs.sln" ]; then
+          echo "Solution file exists"
+          # Check if solution has projects
+          if grep -q "Project(" "Purlieu.ECs.sln"; then
+            echo "has_projects=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_projects=false" >> $GITHUB_OUTPUT
+            echo "Solution file exists but has no projects yet"
+          fi
+        else
+          echo "has_projects=false" >> $GITHUB_OUTPUT
+          echo "No solution file found"
+        fi
+
+    - name: Restore dependencies
+      if: steps.check.outputs.has_projects == 'true'
+      run: dotnet restore
+
+    - name: Build
+      if: steps.check.outputs.has_projects == 'true'
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run tests
+      if: steps.check.outputs.has_projects == 'true'
+      run: dotnet test --no-build --configuration Release --verbosity normal
+
+    - name: Status message
+      if: steps.check.outputs.has_projects == 'false'
+      run: echo "No projects to build yet. Workflow will activate once projects are added to the solution."

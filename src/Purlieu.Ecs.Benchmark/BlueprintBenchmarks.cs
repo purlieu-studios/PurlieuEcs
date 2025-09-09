@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using BenchmarkDotNet.Attributes;
 using Purlieu.Ecs.Blueprints;
 using Purlieu.Ecs.Core;
@@ -39,10 +39,10 @@ public class BlueprintBenchmarks
     {
         ComponentTypeRegistry.Reset();
         _world = new World();
-        
+
         _simpleBlueprint = EntityBlueprint.Empty
             .With(new BenchPosition(10, 20));
-            
+
         _complexBlueprint = EntityBlueprint.Empty
             .With(new BenchPosition(100, 200))
             .With(new BenchVelocity(1.5f, -2.0f))

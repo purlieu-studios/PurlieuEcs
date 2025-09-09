@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -26,7 +26,7 @@ public sealed class BlueprintRegistry
     {
         if (string.IsNullOrEmpty(name))
             throw new ArgumentException("Blueprint name cannot be null or empty", nameof(name));
-        
+
         if (blueprint == null)
             throw new ArgumentNullException(nameof(blueprint));
 
@@ -40,7 +40,7 @@ public sealed class BlueprintRegistry
     {
         if (string.IsNullOrEmpty(name))
             throw new ArgumentException("Blueprint name cannot be null or empty", nameof(name));
-        
+
         if (string.IsNullOrEmpty(filePath))
             throw new ArgumentException("File path cannot be null or empty", nameof(filePath));
 
@@ -111,7 +111,7 @@ public sealed class BlueprintRegistry
 
         var removedFromCache = _blueprints.Remove(name);
         var removedFromFiles = _filePaths.Remove(name);
-        
+
         return removedFromCache || removedFromFiles;
     }
 
@@ -130,10 +130,10 @@ public sealed class BlueprintRegistry
     public IEnumerable<string> GetNames()
     {
         var names = new HashSet<string>();
-        
+
         foreach (var name in _blueprints.Keys)
             names.Add(name);
-            
+
         foreach (var name in _filePaths.Keys)
             names.Add(name);
 

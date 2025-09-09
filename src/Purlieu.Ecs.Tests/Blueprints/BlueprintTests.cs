@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -35,10 +35,10 @@ public class BlueprintTests
     public void IT_Blueprint_EmptyBlueprint_CreatesCorrectly()
     {
         var blueprint = EntityBlueprint.Empty;
-        
-        Assert.AreEqual(0, blueprint.ComponentCount);
-        Assert.IsTrue(blueprint.Signature.IsEmpty);
-        Assert.AreEqual(0, blueprint.Components.Count);
+
+        Assert.That(blueprint.ComponentCount, Is.EqualTo(0));
+        Assert.That(blueprint.Signature.IsEmpty, Is.True);
+        Assert.That(blueprint.Components.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -47,13 +47,13 @@ public class BlueprintTests
         var blueprint = EntityBlueprint.Empty
             .With(new TestPosition(10, 20));
 
-        Assert.AreEqual(1, blueprint.ComponentCount);
-        Assert.IsTrue(blueprint.Has<TestPosition>());
-        Assert.IsFalse(blueprint.Signature.IsEmpty);
-        
+        Assert.That(blueprint.ComponentCount, Is.EqualTo(1));
+        Assert.That(blueprint.Has<TestPosition>(), Is.True);
+        Assert.That(blueprint.Signature.IsEmpty, Is.False);
+
         var pos = blueprint.Get<TestPosition>();
-        Assert.AreEqual(10, pos.X);
-        Assert.AreEqual(20, pos.Y);
+        Assert.That(pos.X, Is.EqualTo(10));
+        Assert.That(pos.Y, Is.EqualTo(20));
     }
 
     [Test]
@@ -64,18 +64,18 @@ public class BlueprintTests
             .With(new TestVelocity(1.5f, -2.0f))
             .With(new TestTag());
 
-        Assert.AreEqual(3, blueprint.ComponentCount);
-        Assert.IsTrue(blueprint.Has<TestPosition>());
-        Assert.IsTrue(blueprint.Has<TestVelocity>());
-        Assert.IsTrue(blueprint.Has<TestTag>());
-        
+        Assert.That(blueprint.ComponentCount, Is.EqualTo(3));
+        Assert.That(blueprint.Has<TestPosition>(), Is.True);
+        Assert.That(blueprint.Has<TestVelocity>(), Is.True);
+        Assert.That(blueprint.Has<TestTag>(), Is.True);
+
         var pos = blueprint.Get<TestPosition>();
-        Assert.AreEqual(5, pos.X);
-        Assert.AreEqual(15, pos.Y);
-        
+        Assert.That(pos.X, Is.EqualTo(5));
+        Assert.That(pos.Y, Is.EqualTo(15));
+
         var vel = blueprint.Get<TestVelocity>();
-        Assert.AreEqual(1.5f, vel.VX, 0.001f);
-        Assert.AreEqual(-2.0f, vel.VY, 0.001f);
+        Assert.That(vel.VX, Is.EqualTo(1.5f).Within(0.001f));
+        Assert.That(vel.VY, Is.EqualTo(-2.0f).Within(0.001f));
     }
 
     [Test]
@@ -86,9 +86,9 @@ public class BlueprintTests
             .With(new TestVelocity(1.0f, 2.0f))
             .Without<TestPosition>();
 
-        Assert.AreEqual(1, blueprint.ComponentCount);
-        Assert.IsFalse(blueprint.Has<TestPosition>());
-        Assert.IsTrue(blueprint.Has<TestVelocity>());
+        Assert.That(blueprint.ComponentCount, Is.EqualTo(1));
+        Assert.That(blueprint.Has<TestPosition>(), Is.False);
+        Assert.That(blueprint.Has<TestVelocity>(), Is.True);
     }
 
     [Test]
@@ -97,12 +97,12 @@ public class BlueprintTests
         var blueprint = EntityBlueprint.Empty
             .With(new TestPosition(100, 200));
 
-        Assert.IsTrue(blueprint.TryGet<TestPosition>(out var pos));
-        Assert.AreEqual(100, pos.X);
-        Assert.AreEqual(200, pos.Y);
-        
-        Assert.IsFalse(blueprint.TryGet<TestVelocity>(out var vel));
-        Assert.AreEqual(default(TestVelocity), vel);
+        Assert.That(blueprint.TryGet<TestPosition>(out var pos), Is.True);
+        Assert.That(pos.X, Is.EqualTo(100));
+        Assert.That(pos.Y, Is.EqualTo(200));
+
+        Assert.That(blueprint.TryGet<TestVelocity>(out var vel), Is.False);
+        Assert.That(vel, Is.EqualTo(default(TestVelocity)));
     }
 
     [Test]
@@ -121,14 +121,14 @@ public class BlueprintTests
         var clone = original.Clone();
         clone.With(new TestVelocity(1.0f, 2.0f));
 
-        Assert.AreEqual(1, original.ComponentCount);
-        Assert.AreEqual(2, clone.ComponentCount);
-        
-        Assert.IsTrue(original.Has<TestPosition>());
-        Assert.IsFalse(original.Has<TestVelocity>());
-        
-        Assert.IsTrue(clone.Has<TestPosition>());
-        Assert.IsTrue(clone.Has<TestVelocity>());
+        Assert.That(original.ComponentCount, Is.EqualTo(1));
+        Assert.That(clone.ComponentCount, Is.EqualTo(2));
+
+        Assert.That(original.Has<TestPosition>(), Is.True);
+        Assert.That(original.Has<TestVelocity>(), Is.False);
+
+        Assert.That(clone.Has<TestPosition>(), Is.True);
+        Assert.That(clone.Has<TestVelocity>(), Is.True);
     }
 
     [Test]
@@ -137,14 +137,14 @@ public class BlueprintTests
         var blueprint = EntityBlueprint.Empty;
         var emptySignature = blueprint.Signature;
         var emptySignature2 = blueprint.Signature;
-        
-        Assert.AreEqual(emptySignature, emptySignature2);
-        
+
+        Assert.That(emptySignature2, Is.EqualTo(emptySignature));
+
         blueprint.With(new TestPosition(1, 2));
         var withPosSignature = blueprint.Signature;
-        
-        Assert.AreNotEqual(emptySignature, withPosSignature);
-        Assert.IsFalse(withPosSignature.IsEmpty);
+
+        Assert.That(withPosSignature, Is.Not.EqualTo(emptySignature));
+        Assert.That(withPosSignature.IsEmpty, Is.False);
     }
 
     [Test]
@@ -157,17 +157,17 @@ public class BlueprintTests
 
         var entity = world.Instantiate(blueprint);
 
-        Assert.IsTrue(world.EntityExists(entity));
-        Assert.IsTrue(world.HasComponent<TestPosition>(entity));
-        Assert.IsTrue(world.HasComponent<TestVelocity>(entity));
-        
+        Assert.That(world.EntityExists(entity), Is.True);
+        Assert.That(world.HasComponent<TestPosition>(entity), Is.True);
+        Assert.That(world.HasComponent<TestVelocity>(entity), Is.True);
+
         var pos = world.GetComponent<TestPosition>(entity);
-        Assert.AreEqual(42, pos.X);
-        Assert.AreEqual(84, pos.Y);
-        
+        Assert.That(pos.X, Is.EqualTo(42));
+        Assert.That(pos.Y, Is.EqualTo(84));
+
         var vel = world.GetComponent<TestVelocity>(entity);
-        Assert.AreEqual(3.14f, vel.VX, 0.001f);
-        Assert.AreEqual(2.71f, vel.VY, 0.001f);
+        Assert.That(vel.VX, Is.EqualTo(3.14f).Within(0.001f));
+        Assert.That(vel.VY, Is.EqualTo(2.71f).Within(0.001f));
     }
 
     [Test]
@@ -178,9 +178,9 @@ public class BlueprintTests
 
         var entity = world.Instantiate(blueprint);
 
-        Assert.IsTrue(world.EntityExists(entity));
-        Assert.IsFalse(world.HasComponent<TestPosition>(entity));
-        Assert.IsFalse(world.HasComponent<TestVelocity>(entity));
+        Assert.That(world.EntityExists(entity), Is.True);
+        Assert.That(world.HasComponent<TestPosition>(entity), Is.False);
+        Assert.That(world.HasComponent<TestVelocity>(entity), Is.False);
     }
 
     [Test]
@@ -193,18 +193,18 @@ public class BlueprintTests
 
         var entities = world.InstantiateBatch(blueprint, 5);
 
-        Assert.AreEqual(5, entities.Length);
-        Assert.AreEqual(5, world.EntityCount);
-        
+        Assert.That(entities.Length, Is.EqualTo(5));
+        Assert.That(world.EntityCount, Is.EqualTo(5));
+
         foreach (var entity in entities)
         {
-            Assert.IsTrue(world.EntityExists(entity));
-            Assert.IsTrue(world.HasComponent<TestPosition>(entity));
-            Assert.IsTrue(world.HasComponent<TestTag>(entity));
-            
+            Assert.That(world.EntityExists(entity), Is.True);
+            Assert.That(world.HasComponent<TestPosition>(entity), Is.True);
+            Assert.That(world.HasComponent<TestTag>(entity), Is.True);
+
             var pos = world.GetComponent<TestPosition>(entity);
-            Assert.AreEqual(10, pos.X);
-            Assert.AreEqual(20, pos.Y);
+            Assert.That(pos.X, Is.EqualTo(10));
+            Assert.That(pos.Y, Is.EqualTo(20));
         }
     }
 
@@ -213,7 +213,7 @@ public class BlueprintTests
     {
         var world = new World();
         var blueprint = EntityBlueprint.Empty;
-        
+
         Assert.Throws<ArgumentException>(() => world.InstantiateBatch(blueprint, 0));
     }
 
@@ -222,7 +222,7 @@ public class BlueprintTests
     {
         var world = new World();
         var blueprint = EntityBlueprint.Empty;
-        
+
         Assert.Throws<ArgumentException>(() => world.InstantiateBatch(blueprint, -5));
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json;
 using NUnit.Framework;
@@ -49,12 +49,12 @@ public class BlueprintSerializationTests
     public void SNAP_Serialization_EmptyBlueprint_RoundTrip()
     {
         var original = EntityBlueprint.Empty;
-        
+
         var json = BlueprintSerializer.SerializeToJson(original);
         var deserialized = BlueprintSerializer.DeserializeFromJson(json);
 
-        Assert.AreEqual(0, deserialized.ComponentCount);
-        Assert.IsTrue(deserialized.Signature.IsEmpty);
+        Assert.That(deserialized.ComponentCount, Is.EqualTo(0));
+        Assert.That(deserialized.Signature.IsEmpty, Is.True);
     }
 
     [Test]
@@ -62,16 +62,16 @@ public class BlueprintSerializationTests
     {
         var original = EntityBlueprint.Empty
             .With(new SerializablePosition(100, 200));
-        
+
         var json = BlueprintSerializer.SerializeToJson(original);
         var deserialized = BlueprintSerializer.DeserializeFromJson(json);
 
-        Assert.AreEqual(1, deserialized.ComponentCount);
-        Assert.IsTrue(deserialized.Has<SerializablePosition>());
-        
+        Assert.That(deserialized.ComponentCount, Is.EqualTo(1));
+        Assert.That(deserialized.Has<SerializablePosition>(), Is.True);
+
         var pos = deserialized.Get<SerializablePosition>();
-        Assert.AreEqual(100, pos.X);
-        Assert.AreEqual(200, pos.Y);
+        Assert.That(pos.X, Is.EqualTo(100));
+        Assert.That(pos.Y, Is.EqualTo(200));
     }
 
     [Test]
@@ -81,22 +81,22 @@ public class BlueprintSerializationTests
             .With(new SerializablePosition(50, 75))
             .With(new SerializableVelocity(1.5f, -2.5f))
             .With(new SerializableTag());
-        
+
         var json = BlueprintSerializer.SerializeToJson(original);
         var deserialized = BlueprintSerializer.DeserializeFromJson(json);
 
-        Assert.AreEqual(3, deserialized.ComponentCount);
-        Assert.IsTrue(deserialized.Has<SerializablePosition>());
-        Assert.IsTrue(deserialized.Has<SerializableVelocity>());
-        Assert.IsTrue(deserialized.Has<SerializableTag>());
-        
+        Assert.That(deserialized.ComponentCount, Is.EqualTo(3));
+        Assert.That(deserialized.Has<SerializablePosition>(), Is.True);
+        Assert.That(deserialized.Has<SerializableVelocity>(), Is.True);
+        Assert.That(deserialized.Has<SerializableTag>(), Is.True);
+
         var pos = deserialized.Get<SerializablePosition>();
-        Assert.AreEqual(50, pos.X);
-        Assert.AreEqual(75, pos.Y);
-        
+        Assert.That(pos.X, Is.EqualTo(50));
+        Assert.That(pos.Y, Is.EqualTo(75));
+
         var vel = deserialized.Get<SerializableVelocity>();
-        Assert.AreEqual(1.5f, vel.VX, 0.001f);
-        Assert.AreEqual(-2.5f, vel.VY, 0.001f);
+        Assert.That(vel.VX, Is.EqualTo(1.5f).Within(0.001f));
+        Assert.That(vel.VY, Is.EqualTo(-2.5f).Within(0.001f));
     }
 
     [Test]
@@ -105,21 +105,21 @@ public class BlueprintSerializationTests
         var original = EntityBlueprint.Empty
             .With(new SerializablePosition(123, 456))
             .With(new SerializableVelocity(7.89f, 12.34f));
-        
+
         var binary = BlueprintSerializer.SerializeToBinary(original);
         var deserialized = BlueprintSerializer.DeserializeFromBinary(binary);
 
-        Assert.AreEqual(2, deserialized.ComponentCount);
-        Assert.IsTrue(deserialized.Has<SerializablePosition>());
-        Assert.IsTrue(deserialized.Has<SerializableVelocity>());
-        
+        Assert.That(deserialized.ComponentCount, Is.EqualTo(2));
+        Assert.That(deserialized.Has<SerializablePosition>(), Is.True);
+        Assert.That(deserialized.Has<SerializableVelocity>(), Is.True);
+
         var pos = deserialized.Get<SerializablePosition>();
-        Assert.AreEqual(123, pos.X);
-        Assert.AreEqual(456, pos.Y);
-        
+        Assert.That(pos.X, Is.EqualTo(123));
+        Assert.That(pos.Y, Is.EqualTo(456));
+
         var vel = deserialized.Get<SerializableVelocity>();
-        Assert.AreEqual(7.89f, vel.VX, 0.001f);
-        Assert.AreEqual(12.34f, vel.VY, 0.001f);
+        Assert.That(vel.VX, Is.EqualTo(7.89f).Within(0.001f));
+        Assert.That(vel.VY, Is.EqualTo(12.34f).Within(0.001f));
     }
 
     [Test]
@@ -129,18 +129,18 @@ public class BlueprintSerializationTests
             .With(new SerializablePosition(999, 888));
 
         var filePath = Path.Combine(_tempDir, "test_blueprint.json");
-        
+
         BlueprintSerializer.SaveToFile(original, filePath);
-        Assert.IsTrue(File.Exists(filePath));
-        
+        Assert.That(File.Exists(filePath), Is.True);
+
         var loaded = BlueprintSerializer.LoadFromFile(filePath);
-        
-        Assert.AreEqual(1, loaded.ComponentCount);
-        Assert.IsTrue(loaded.Has<SerializablePosition>());
-        
+
+        Assert.That(loaded.ComponentCount, Is.EqualTo(1));
+        Assert.That(loaded.Has<SerializablePosition>(), Is.True);
+
         var pos = loaded.Get<SerializablePosition>();
-        Assert.AreEqual(999, pos.X);
-        Assert.AreEqual(888, pos.Y);
+        Assert.That(pos.X, Is.EqualTo(999));
+        Assert.That(pos.Y, Is.EqualTo(888));
     }
 
     [Test]
@@ -151,23 +151,23 @@ public class BlueprintSerializationTests
             .With(new SerializableVelocity(-1.23f, 4.56f));
 
         var filePath = Path.Combine(_tempDir, "test_blueprint.bin");
-        
+
         BlueprintSerializer.SaveToBinaryFile(original, filePath);
-        Assert.IsTrue(File.Exists(filePath));
-        
+        Assert.That(File.Exists(filePath), Is.True);
+
         var loaded = BlueprintSerializer.LoadFromBinaryFile(filePath);
-        
-        Assert.AreEqual(2, loaded.ComponentCount);
-        Assert.IsTrue(loaded.Has<SerializablePosition>());
-        Assert.IsTrue(loaded.Has<SerializableVelocity>());
-        
+
+        Assert.That(loaded.ComponentCount, Is.EqualTo(2));
+        Assert.That(loaded.Has<SerializablePosition>(), Is.True);
+        Assert.That(loaded.Has<SerializableVelocity>(), Is.True);
+
         var pos = loaded.Get<SerializablePosition>();
-        Assert.AreEqual(777, pos.X);
-        Assert.AreEqual(666, pos.Y);
-        
+        Assert.That(pos.X, Is.EqualTo(777));
+        Assert.That(pos.Y, Is.EqualTo(666));
+
         var vel = loaded.Get<SerializableVelocity>();
-        Assert.AreEqual(-1.23f, vel.VX, 0.001f);
-        Assert.AreEqual(4.56f, vel.VY, 0.001f);
+        Assert.That(vel.VX, Is.EqualTo(-1.23f).Within(0.001f));
+        Assert.That(vel.VY, Is.EqualTo(4.56f).Within(0.001f));
     }
 
     [Test]
@@ -206,10 +206,10 @@ public class BlueprintSerializationTests
             .With(new SerializableVelocity(3.0f, 4.0f));
 
         var originalSignature = original.Signature;
-        
+
         var json = BlueprintSerializer.SerializeToJson(original);
         var deserialized = BlueprintSerializer.DeserializeFromJson(json);
-        
-        Assert.AreEqual(originalSignature, deserialized.Signature);
+
+        Assert.That(deserialized.Signature, Is.EqualTo(originalSignature));
     }
 }

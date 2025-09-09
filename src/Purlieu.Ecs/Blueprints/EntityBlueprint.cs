@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Purlieu.Ecs.Core;
@@ -89,7 +89,7 @@ public sealed class EntityBlueprint
         var componentData = _components.FirstOrDefault(c => c.ComponentType == componentType);
         if (componentData.ComponentType == null)
             throw new ArgumentException($"Blueprint does not contain component of type {typeof(T)}");
-        
+
         return (T)componentData.Value;
     }
 
@@ -105,7 +105,7 @@ public sealed class EntityBlueprint
             component = (T)componentData.Value;
             return true;
         }
-        
+
         component = default;
         return false;
     }

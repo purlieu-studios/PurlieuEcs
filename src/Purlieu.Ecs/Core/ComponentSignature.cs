@@ -26,6 +26,16 @@ public readonly struct ComponentSignature : IEquatable<ComponentSignature>
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ComponentSignature WithType(Type componentType)
+    {
+        var typeId = ComponentTypeRegistry.GetOrAssignId(componentType);
+        if (typeId >= 64)
+            throw new InvalidOperationException($"Component type ID {typeId} exceeds maximum of 63");
+
+        return new ComponentSignature(_bits | (1UL << typeId));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ComponentSignature Without<T>() where T : struct
     {
         var typeId = ComponentTypeId<T>.Id;
@@ -176,6 +186,22 @@ public static class ComponentTypeRegistry
     public static int GetId<T>() where T : struct
     {
         return _typeToId.TryGetValue(typeof(T), out var id) ? id : -1;
+    }
+
+    public static int GetOrAssignId(Type componentType)
+    {
+        if (!componentType.IsValueType)
+            throw new ArgumentException($"Component type {componentType} must be a value type (struct)");
+
+        if (_typeToId.TryGetValue(componentType, out var existingId))
+            return existingId;
+
+        if (_nextId >= 64)
+            throw new InvalidOperationException("Maximum of 64 component types supported");
+
+        var newId = _nextId++;
+        _typeToId[componentType] = newId;
+        return newId;
     }
 
     public static void Reset()

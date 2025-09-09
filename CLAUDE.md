@@ -168,7 +168,14 @@ Example:
 - Use descriptive branch names that match the feature being implemented.  
 - Each PR should implement ONE logical feature or fix.  
 - PRs must pass all tests and build successfully before merge.  
-- Use squash merge to keep main branch history clean.  
+- Use squash merge to keep main branch history clean.
+
+### Code Formatting Enforcement
+- **Pre-commit hooks** automatically verify code formatting using `dotnet format --verify-no-changes`  
+- **CI/CD pipeline** blocks merges on formatting violations  
+- **Line endings** are normalized via `.gitattributes` (CRLF for C# files, LF for scripts)  
+- **Bypass formatting checks** only in emergencies using `git commit --no-verify`  
+- **Husky.Net** manages git hooks - run `husky install` after fresh clone  
 
 ### Development Workflow
 - Commit after every substantial change within your feature branch.  

@@ -343,6 +343,109 @@ public sealed class World
     /// </summary>
     public int EventChannelCount => _eventChannels.Count;
 
+    /// <summary>
+    /// Instantiate a single entity from a blueprint with direct archetype placement.
+    /// This is more efficient than using individual AddComponent calls.
+    /// </summary>
+    /// <param name="blueprint">Blueprint defining the entity's components</param>
+    /// <returns>The created entity</returns>
+    public Entity Instantiate(Blueprints.EntityBlueprint blueprint)
+    {
+        if (blueprint.ComponentCount == 0)
+        {
+            // Empty blueprint, just create empty entity
+            return CreateEntity();
+        }
+
+        // Get or create the archetype for this blueprint
+        var archetype = GetOrCreateArchetype(blueprint.Signature);
+
+        // Create entity with unique ID
+        uint id;
+        if (_freeEntityIds.Count > 0)
+        {
+            id = _freeEntityIds.Dequeue();
+        }
+        else
+        {
+            id = _nextEntityId++;
+        }
+
+        var entity = new Entity(id, 1);
+
+        // Add entity directly to the target archetype
+        var entityIndex = archetype.AddEntity(entity);
+        _entityToArchetype[entity] = archetype;
+
+        // Set all components directly in the chunk
+        var (chunk, chunkIndex) = archetype.GetEntityLocation(entity);
+        foreach (var componentData in blueprint.Components)
+        {
+            chunk.SetComponentByType(chunkIndex, componentData.ComponentType, componentData.Value);
+        }
+
+        return entity;
+    }
+
+    /// <summary>
+    /// Instantiate multiple entities from the same blueprint efficiently.
+    /// This is optimized for spawning many entities with identical component sets.
+    /// </summary>
+    /// <param name="blueprint">Blueprint defining the entity's components</param>
+    /// <param name="count">Number of entities to create</param>
+    /// <returns>Array of created entities</returns>
+    public Entity[] InstantiateBatch(Blueprints.EntityBlueprint blueprint, int count)
+    {
+        if (count <= 0)
+            throw new ArgumentException("Count must be positive", nameof(count));
+
+        var entities = new Entity[count];
+
+        if (blueprint.ComponentCount == 0)
+        {
+            // Empty blueprint, just create empty entities
+            for (int i = 0; i < count; i++)
+            {
+                entities[i] = CreateEntity();
+            }
+            return entities;
+        }
+
+        // Get or create the archetype for this blueprint
+        var archetype = GetOrCreateArchetype(blueprint.Signature);
+
+        // Create all entities
+        for (int i = 0; i < count; i++)
+        {
+            // Create entity with unique ID
+            uint id;
+            if (_freeEntityIds.Count > 0)
+            {
+                id = _freeEntityIds.Dequeue();
+            }
+            else
+            {
+                id = _nextEntityId++;
+            }
+
+            var entity = new Entity(id, 1);
+            entities[i] = entity;
+
+            // Add entity directly to the target archetype
+            var entityIndex = archetype.AddEntity(entity);
+            _entityToArchetype[entity] = archetype;
+
+            // Set all components directly in the chunk
+            var (chunk, chunkIndex) = archetype.GetEntityLocation(entity);
+            foreach (var componentData in blueprint.Components)
+            {
+                chunk.SetComponentByType(chunkIndex, componentData.ComponentType, componentData.Value);
+            }
+        }
+
+        return entities;
+    }
+
     public override string ToString()
     {
         return $"World(entities={EntityCount}, archetypes={ArchetypeCount})";

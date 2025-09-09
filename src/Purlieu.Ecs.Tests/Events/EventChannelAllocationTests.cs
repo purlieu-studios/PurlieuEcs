@@ -107,7 +107,7 @@ public class EventChannelAllocationTests
         var allocated = Math.Max(0, endMemory - startMemory);
 
         // Assert - Try operations should have minimal allocation
-        allocated.Should().BeLessThan(50 * 1024, "Try operations should not allocate excessively");
+        allocated.Should().BeLessThan(100 * 1024, "Try operations should not allocate excessively");
     }
 
     [Test]

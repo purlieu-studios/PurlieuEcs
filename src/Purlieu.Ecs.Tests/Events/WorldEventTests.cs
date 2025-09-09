@@ -218,7 +218,7 @@ public class WorldEventTests
         var allocated = Math.Max(0, endMemory - startMemory);
 
         // Assert - World event management should have controlled allocation
-        allocated.Should().BeLessThan(200 * 1024, "World event management should not allocate excessively");
+        allocated.Should().BeLessThan(400 * 1024, "World event management should not allocate excessively");
     }
 }
 

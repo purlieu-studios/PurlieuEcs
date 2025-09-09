@@ -144,7 +144,7 @@ public class EntityAdvancedTests
 
         // Assert
         hashSet.Count.Should().Be(entities.Count, "All unique entities should be added to HashSet");
-        
+
         foreach (var entity in entities)
         {
             hashSet.Should().Contain(entity, "HashSet should contain all added entities");
@@ -188,7 +188,7 @@ public class EntityAdvancedTests
         // Assert
         sorted1.Should().BeEquivalentTo(sorted2, options => options.WithStrictOrdering());
         sorted2.Should().BeEquivalentTo(sorted3, options => options.WithStrictOrdering());
-        
+
         // Verify expected order: ID first, then version
         sorted1[0].Should().Be(new Entity(50, 1));
         sorted1[1].Should().Be(new Entity(50, 3));
@@ -264,8 +264,8 @@ public class EntityAdvancedTests
                 }
                 else
                 {
-                    generations[i].Should().NotBe(generations[j], 
-                        $"Different generations should not be equal (gen {i+1} vs gen {j+1})");
+                    generations[i].Should().NotBe(generations[j],
+                        $"Different generations should not be equal (gen {i + 1} vs gen {j + 1})");
                 }
             }
         }
@@ -289,10 +289,10 @@ public class EntityAdvancedTests
         // Assert
         var endMemory = GC.GetTotalMemory(false);
         var memoryIncrease = endMemory - startMemory;
-        
+
         // Allow reasonable memory usage for collections
         var expectedMaxMemory = entityCount * 64; // Rough estimate: 64 bytes per entity in collections
-        memoryIncrease.Should().BeLessThan(expectedMaxMemory * 2, 
+        memoryIncrease.Should().BeLessThan(expectedMaxMemory * 2,
             $"Memory usage should be reasonable for {entityCount} entities");
 
         hashSet.Count.Should().Be(entityCount);
@@ -334,7 +334,7 @@ public class EntityAdvancedTests
         // Assert
         entityString.Should().Be("Entity(12345:67890)");
         nullString.Should().Be("Entity(null)");
-        
+
         entityString.Should().Contain("12345");
         entityString.Should().Contain("67890");
         nullString.Should().Contain("null");
@@ -349,7 +349,7 @@ public class EntityAdvancedTests
         {
             var id = _faker.Random.UInt();
             var version = _faker.Random.UInt();
-            
+
             if (usedCombinations.Add((id, version)))
             {
                 entities.Add(new Entity(id, version));

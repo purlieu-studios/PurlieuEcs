@@ -204,7 +204,7 @@ public class EntityTests
 
         // Assert - Should always produce same order
         Assert.That(sorted1, Is.EqualTo(sorted2));
-        
+
         // Verify expected order: (50,1), (50,2), (100,1), (100,2), (200,1)
         Assert.That(sorted1[0], Is.EqualTo(new Entity(50, 1)));
         Assert.That(sorted1[1], Is.EqualTo(new Entity(50, 2)));
@@ -218,17 +218,17 @@ public class EntityTests
     {
         // This test verifies Entity follows value type semantics
         // which ensures no heap allocations for basic operations
-        
+
         // Arrange
         var entity1 = new Entity(123, 456);
         var entity2 = new Entity(789, 012);
 
         // Act & Assert - These operations should work with value semantics
         // Value types are stack-allocated and don't require heap allocations
-        
+
         // Test that Entity behaves as a value type
         Assert.That(entity1.GetType().IsValueType, Is.True, "Entity must be a value type");
-        
+
         // Test operations work correctly (functionality test)
         var comparison = entity1.CompareTo(entity2);
         var equals = entity1.Equals(entity2);
@@ -247,7 +247,7 @@ public class EntityTests
         Assert.That(isNull, Is.False);
         Assert.That(id, Is.EqualTo(123u));
         Assert.That(version, Is.EqualTo(456u));
-        
+
         // Test that struct copying works correctly (value semantics)
         var copy = entity1;
         Assert.That(copy, Is.EqualTo(entity1));
@@ -259,7 +259,7 @@ public class EntityTests
     {
         // This test verifies Entity construction follows value type semantics
         // Value types are allocated on the stack, not the heap
-        
+
         // Act - Create entities (value types should be stack-allocated)
         var entity1 = new Entity(123, 456);
         var entity2 = Entity.Null;
@@ -268,19 +268,19 @@ public class EntityTests
 
         // Assert - Verify value type behavior and correct construction
         Assert.That(typeof(Entity).IsValueType, Is.True, "Entity must be a value type");
-        
+
         // Verify entities were created correctly on the stack
         Assert.That(entity1.Id, Is.EqualTo(123u));
         Assert.That(entity1.Version, Is.EqualTo(456u));
         Assert.That(entity2.IsNull, Is.True);
         Assert.That(entity3.IsNull, Is.True);
         Assert.That(entity4.ToPacked(), Is.EqualTo(0x123456789ABCDEF0UL));
-        
+
         // Test that default construction works
         var defaultEntity = new Entity();
         Assert.That(defaultEntity.IsNull, Is.True);
         Assert.That(defaultEntity, Is.EqualTo(Entity.Null));
-        
+
         // Test that struct assignment creates copies (value semantics)
         var copy = entity1;
         Assert.That(copy, Is.EqualTo(entity1));

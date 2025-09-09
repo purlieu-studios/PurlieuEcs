@@ -21,10 +21,10 @@ public class EntityBenchmarks
     public void Setup()
     {
         var random = new Random(42); // Fixed seed for consistent results
-        
+
         _entities = new Entity[EntityCount];
         _packedEntities = new ulong[EntityCount];
-        
+
         for (int i = 0; i < EntityCount; i++)
         {
             var id = (uint)random.Next();
@@ -32,7 +32,7 @@ public class EntityBenchmarks
             _entities[i] = new Entity(id, version);
             _packedEntities[i] = _entities[i].ToPacked();
         }
-        
+
         _entityHashSet = new HashSet<Entity>(_entities);
     }
 

@@ -162,14 +162,29 @@ Example:
 
 ## 🚦 Workflow Practices
 
-- Commit after every substantial change.  
-- Build the project before pushing.  
-- Always push to `main`, not `master`.  
+### Branch and PR Requirements
+- **NEVER commit directly to `main`** - all changes must go through PR review.  
+- Create feature branches: `feature/entity-system`, `feature/query-builder`, etc.  
+- Use descriptive branch names that match the feature being implemented.  
+- Each PR should implement ONE logical feature or fix.  
+- PRs must pass all tests and build successfully before merge.  
+- Use squash merge to keep main branch history clean.  
+
+### Development Workflow
+- Commit after every substantial change within your feature branch.  
+- Build and test the project before creating PR.  
 - Update `World` when internals change.  
 - Add tests for generated code where applicable.  
 - After major changes, run:  
   `/project:ecs-mind "Are we still on track to a performant application?"`  
 - Use import files for using statements to speed development.  
+
+### PR Template
+- **Title**: Clear, descriptive summary of changes  
+- **Description**: What was implemented and why  
+- **Testing**: What tests were added/updated  
+- **Performance**: Any performance implications  
+- **Breaking Changes**: List any API changes  
 
 ---
 

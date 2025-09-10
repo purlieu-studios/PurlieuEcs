@@ -111,7 +111,8 @@ public class DefragmentationTests
     public void DEFRAG_WorldDefragmentation_ShouldProcessMultipleArchetypes()
     {
         // Arrange - Create multiple archetypes with heavy fragmentation
-        var entityCount = PlatformTestHelper.AdjustEntityCount(1500);
+        // Ensure we create enough entities to span multiple chunks (512 each) even on macOS
+        var entityCount = Math.Max(1200, PlatformTestHelper.AdjustEntityCount(1500));
 
         // Archetype 1: Position only - create enough entities to span multiple chunks, then remove many
         var positionEntities = new Entity[entityCount];

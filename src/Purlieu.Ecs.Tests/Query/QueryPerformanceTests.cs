@@ -24,6 +24,7 @@ public class QueryPerformanceTests
     }
 
     [Test]
+    [Category("Performance")]
     public void BENCH_SimpleQuery_ShouldIterateEfficiently()
     {
         // Arrange - Create 10,000 entities
@@ -72,6 +73,7 @@ public class QueryPerformanceTests
     }
 
     [Test]
+    [Category("Performance")]
     public void BENCH_ComplexQuery_ShouldFilterEfficiently()
     {
         // Arrange - Create mixed archetypes
@@ -119,6 +121,7 @@ public class QueryPerformanceTests
     }
 
     [Test]
+    [Category("Performance")]
     public void BENCH_QueryConstruction_ShouldBeFast()
     {
         // Arrange - Prepare world with entities
@@ -156,6 +159,7 @@ public class QueryPerformanceTests
     }
 
     [Test]
+    [Category("Performance")]
     [Ignore("Linear scaling test is too sensitive to CPU cache effects")]
     public void BENCH_ChunkIteration_ShouldScaleLinearly()
     {
@@ -214,6 +218,7 @@ public class QueryPerformanceTests
     }
 
     [Test]
+    [Category("Performance")]
     public void BENCH_MultipleQueries_ShouldNotInterfere()
     {
         // Skip on macOS and Windows CI due to extreme performance variability  
@@ -305,6 +310,7 @@ public class QueryPerformanceTests
     }
 
     [Test]
+    [Category("Performance")]
     [TestCase(100)]
     [TestCase(1000)]
     [TestCase(10000)]

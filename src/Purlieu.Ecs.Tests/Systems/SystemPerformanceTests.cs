@@ -18,6 +18,7 @@ public class SystemPerformanceTests
     private const int MeasureIterations = 50;
 
     [Test, Explicit("Performance benchmark - run manually")]
+    [Category("Performance")]
     public void BENCH_SystemExecution_ShouldScaleLinearly()
     {
         // Measure system execution time across different entity counts
@@ -53,6 +54,7 @@ public class SystemPerformanceTests
     }
 
     [Test, Explicit("Performance benchmark - run manually")]
+    [Category("Performance")]
     public void BENCH_SystemScheduler_Registration_ShouldScaleWithSystemCount()
     {
         var systemCounts = new[] { 10, 50, 100, 200 };

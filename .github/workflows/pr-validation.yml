@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        category: [API, ALLOC, DET, SNAP, IT, BENCH, SOAK, E2E]
+        category: [API, ALLOC, DET, SNAP, IT, SOAK, E2E]
       fail-fast: false
 
     steps:

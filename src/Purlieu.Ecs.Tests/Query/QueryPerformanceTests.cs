@@ -350,7 +350,16 @@ public class QueryPerformanceTests
             _ => 0
         };
 
-        var minimumThroughput = PlatformTestHelper.IsMacOS ? (baseThroughput / 4) : baseThroughput;
+        // Adjust expectations for different environments
+        var minimumThroughput = baseThroughput;
+        if (PlatformTestHelper.IsMacOS)
+        {
+            minimumThroughput /= 4; // macOS is consistently slower
+        }
+        else if (PlatformTestHelper.IsCI && PlatformTestHelper.IsLinux)
+        {
+            minimumThroughput /= 2; // CI environments have variable performance
+        }
 
         throughput.Should().BeGreaterThan(minimumThroughput,
             $"Query throughput for {adjustedEntityCount} entities (adjusted from {entityCount} for {PlatformTestHelper.PlatformDescription}) " +

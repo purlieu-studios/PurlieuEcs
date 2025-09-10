@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace Purlieu.Ecs.Tests.Core;
@@ -21,6 +22,13 @@ public static class PlatformTestHelper
     /// Returns true if running on Windows.
     /// </summary>
     public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+    /// <summary>
+    /// Returns true if running in a CI environment (GitHub Actions, etc.).
+    /// </summary>
+    public static bool IsCI => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("CI")) ||
+                               !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("GITHUB_ACTIONS")) ||
+                               !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TF_BUILD"));
 
     /// <summary>
     /// Adjusts iteration count for performance tests based on platform performance characteristics.

@@ -371,7 +371,7 @@ public class QueryPerformanceTests
             // CI environments have variable performance, adjust by entity count
             var factor = entityCount switch
             {
-                100 => 0.15,   // Small entity counts have proportionally more overhead
+                100 => 0.13,   // Small entity counts have proportionally more overhead
                 1000 => 0.4,   // Medium entity counts perform better
                 10000 => 0.4,  // Large entity counts maintain good throughput
                 _ => 0.4

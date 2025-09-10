@@ -272,3 +272,19 @@ public static class ComponentTypeRegistry
     /// <summary>
     /// Gets the Type for a component ID, if known.
     /// </summary>
+    /// <param name="componentId">Component ID to look up</param>
+    /// <returns>Type or null if not found</returns>
+    public static Type? GetType(int componentId)
+    {
+        return _idToType.TryGetValue(componentId, out var type) ? type : null;
+    }
+
+    public static void Reset()
+    {
+        _typeToId.Clear();
+        _idToType.Clear();
+        _copyDelegates.Clear();
+        _nextId = 0;
+        _version++;
+    }
+}

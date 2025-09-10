@@ -137,8 +137,8 @@ public static class QueryProfiler
 
         stats.ExecutionTime = stopwatch.Elapsed;
         stats.ArchetypesMatched = archetypeSet.Count;
-        stats.AverageChunkUtilization = stats.ChunksProcessed > 0 
-            ? totalUtilization / stats.ChunksProcessed 
+        stats.AverageChunkUtilization = stats.ChunksProcessed > 0
+            ? totalUtilization / stats.ChunksProcessed
             : 0f;
 
         // Record stats for analysis

@@ -55,10 +55,10 @@ public sealed class ComponentQuery : IQuery
     public IEnumerable<IChunkView> Chunks()
     {
         var querySignature = BuildQuerySignature();
-        
+
         var chunks = ChunksInternal().ToList(); // Materialize to allow profiling
         QueryProfiler.ProfileQuery(querySignature, () => chunks);
-        
+
         return chunks;
     }
 
@@ -175,7 +175,7 @@ public sealed class ComponentQuery : IQuery
     private List<string> GetComponentNames(ComponentSignature signature)
     {
         var names = new List<string>();
-        
+
         for (int i = 0; i < 64; i++)
         {
             if (signature.HasComponentId(i))

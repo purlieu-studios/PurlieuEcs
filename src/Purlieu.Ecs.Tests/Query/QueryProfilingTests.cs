@@ -46,10 +46,10 @@ public class QueryProfilingTests
         // Assert - Profiling should capture the execution
         var queries = _world.GetProfiledQueries();
         queries.Should().HaveCount(1);
-        
+
         var querySignature = queries.First();
         querySignature.Should().Contain("Position");
-        
+
         var stats = _world.GetRecentQueryStats(querySignature);
         stats.Should().NotBeNull();
         stats.Value.ChunksProcessed.Should().BeGreaterThan(0);
@@ -75,7 +75,7 @@ public class QueryProfilingTests
         // Assert - Should calculate correct utilization
         var queries = _world.GetProfiledQueries();
         var querySignature = queries.First(q => q.Contains("Position"));
-        
+
         var stats = _world.GetRecentQueryStats(querySignature);
         stats.Should().NotBeNull();
         stats.Value.AverageChunkUtilization.Should().BeApproximately(300f / 512f, 0.01f);
@@ -106,7 +106,7 @@ public class QueryProfilingTests
         // Assert - Should detect sparse chunks
         var queries = _world.GetProfiledQueries();
         var querySignature = queries.First(q => q.Contains("Health"));
-        
+
         var stats = _world.GetRecentQueryStats(querySignature);
         stats.Should().NotBeNull();
         stats.Value.SparseChunks.Should().BeGreaterThan(0);
@@ -164,7 +164,7 @@ public class QueryProfilingTests
         // Assert - Should aggregate statistics correctly
         var queries = _world.GetProfiledQueries();
         var querySignature = queries.First(q => q.Contains("Position"));
-        
+
         var aggregateStats = _world.GetQueryStats(querySignature);
         aggregateStats.Should().NotBeNull();
         aggregateStats.Value.ExecutionCount.Should().Be(5);
@@ -189,7 +189,7 @@ public class QueryProfilingTests
         // Assert - Should have good efficiency score
         var queries = _world.GetProfiledQueries();
         var querySignature = queries.First(q => q.Contains("Position"));
-        
+
         var aggregateStats = _world.GetQueryStats(querySignature);
         aggregateStats.Should().NotBeNull();
         aggregateStats.Value.EfficiencyScore.Should().BeGreaterThan(0.7f);
@@ -225,10 +225,10 @@ public class QueryProfilingTests
         {
             var entity = _world.CreateEntity();
             _world.AddComponent(entity, new Position(i, i, i));
-            
+
             if (i % 2 == 0)
                 _world.AddComponent(entity, new Velocity(1, 1, 1));
-            
+
             if (i % 3 == 0)
                 _world.AddComponent(entity, new Health(100, 100));
         }
@@ -238,13 +238,13 @@ public class QueryProfilingTests
             .With<Position>()
             .With<Velocity>()
             .Without<Health>();
-        
+
         query.Chunks().ToList();
 
         // Assert - Should profile complex query signature
         var queries = _world.GetProfiledQueries();
         var querySignature = queries.First(q => q.Contains("Position") && q.Contains("Velocity") && q.Contains("Without"));
-        
+
         var stats = _world.GetRecentQueryStats(querySignature);
         stats.Should().NotBeNull();
         stats.Value.ArchetypesMatched.Should().BeGreaterThan(0);
@@ -258,7 +258,7 @@ public class QueryProfilingTests
         {
             var entity = _world.CreateEntity();
             _world.AddComponent(entity, new Position(i, i, i));
-            
+
             if (i % 4 == 0)
                 _world.AddComponent(entity, new Velocity(1, 1, 1));
         }
@@ -312,7 +312,7 @@ public class QueryProfilingTests
 
         // Act & Assert - Execute query (should not allocate for profiling)
         var query = _world.Query().With<Position>();
-        
+
         // This test mainly ensures that when profiling is disabled,
         // the query execution path doesn't add significant overhead
         var chunks = query.Chunks().ToList();

@@ -669,7 +669,7 @@ public struct QueryPerformanceSummary
     /// <summary>
     /// Overall system efficiency score (0.0 to 1.0).
     /// </summary>
-    public float EfficiencyScore => TotalQueries > 0 
+    public float EfficiencyScore => TotalQueries > 0
         ? AverageUtilization * 0.6f + (1.0f - LowUtilizationQueries / (float)TotalQueries) * 0.4f
         : 1.0f;
 }

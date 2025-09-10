@@ -52,9 +52,9 @@ public class QueryProfilingTests
 
         var stats = _world.GetRecentQueryStats(querySignature);
         stats.Should().NotBeNull();
-        stats.Value.ChunksProcessed.Should().BeGreaterThan(0);
-        stats.Value.EntitiesProcessed.Should().Be(300);
-        stats.Value.ExecutionTime.Should().BeGreaterThan(TimeSpan.Zero);
+        stats!.Value.ChunksProcessed.Should().BeGreaterThan(0);
+        stats!.Value.EntitiesProcessed.Should().Be(300);
+        stats!.Value.ExecutionTime.Should().BeGreaterThan(TimeSpan.Zero);
     }
 
     [Test]
@@ -78,8 +78,8 @@ public class QueryProfilingTests
 
         var stats = _world.GetRecentQueryStats(querySignature);
         stats.Should().NotBeNull();
-        stats.Value.AverageChunkUtilization.Should().BeApproximately(300f / 512f, 0.01f);
-        stats.Value.WastedCapacity.Should().Be(212); // 512 - 300
+        stats!.Value.AverageChunkUtilization.Should().BeApproximately(300f / 512f, 0.01f);
+        stats!.Value.WastedCapacity.Should().Be(212); // 512 - 300
     }
 
     [Test]
@@ -109,8 +109,8 @@ public class QueryProfilingTests
 
         var stats = _world.GetRecentQueryStats(querySignature);
         stats.Should().NotBeNull();
-        stats.Value.SparseChunks.Should().BeGreaterThan(0);
-        stats.Value.AverageChunkUtilization.Should().BeLessThan(0.6f);
+        stats!.Value.SparseChunks.Should().BeGreaterThan(0);
+        stats!.Value.AverageChunkUtilization.Should().BeLessThan(0.6f);
     }
 
     [Test]
@@ -167,9 +167,9 @@ public class QueryProfilingTests
 
         var aggregateStats = _world.GetQueryStats(querySignature);
         aggregateStats.Should().NotBeNull();
-        aggregateStats.Value.ExecutionCount.Should().Be(5);
-        aggregateStats.Value.AverageExecutionTime.Should().BeGreaterThan(TimeSpan.Zero);
-        aggregateStats.Value.AverageChunksProcessed.Should().BeGreaterThan(0);
+        aggregateStats!.Value.ExecutionCount.Should().Be(5);
+        aggregateStats!.Value.AverageExecutionTime.Should().BeGreaterThan(TimeSpan.Zero);
+        aggregateStats!.Value.AverageChunksProcessed.Should().BeGreaterThan(0);
     }
 
     [Test]
@@ -192,7 +192,7 @@ public class QueryProfilingTests
 
         var aggregateStats = _world.GetQueryStats(querySignature);
         aggregateStats.Should().NotBeNull();
-        aggregateStats.Value.EfficiencyScore.Should().BeGreaterThan(0.7f);
+        aggregateStats!.Value.EfficiencyScore.Should().BeGreaterThan(0.7f);
     }
 
     [Test]
@@ -247,7 +247,7 @@ public class QueryProfilingTests
 
         var stats = _world.GetRecentQueryStats(querySignature);
         stats.Should().NotBeNull();
-        stats.Value.ArchetypesMatched.Should().BeGreaterThan(0);
+        stats!.Value.ArchetypesMatched.Should().BeGreaterThan(0);
     }
 
     [Test]

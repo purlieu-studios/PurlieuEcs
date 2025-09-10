@@ -18,6 +18,7 @@ public sealed class World
     private readonly SystemScheduler _scheduler;
     private readonly Dictionary<Type, object> _eventChannels;
     private readonly HashSet<Type> _oneFrameEventTypes;
+    private readonly ChangeTracker _changeTracker;
 
     public World()
     {
@@ -28,6 +29,7 @@ public sealed class World
         _scheduler = new SystemScheduler();
         _eventChannels = new Dictionary<Type, object>();
         _oneFrameEventTypes = new HashSet<Type>();
+        _changeTracker = new ChangeTracker();
     }
 
     public Entity CreateEntity()
@@ -60,6 +62,7 @@ public sealed class World
 
         archetype.RemoveEntity(entity);
         _entityToArchetype.Remove(entity);
+        _changeTracker.RemoveEntity(entity);
 
         // Add ID to free list for reuse (with incremented version)
         _freeEntityIds.Enqueue(entity.Id);
@@ -82,6 +85,7 @@ public sealed class World
         if (newSignature == currentArchetype.Signature)
         {
             currentArchetype.SetComponent(entity, component);
+            _changeTracker.MarkChanged<T>(entity);
             return;
         }
 
@@ -123,6 +127,7 @@ public sealed class World
             throw new InvalidOperationException($"Entity {entity} does not have component {typeof(T).Name}");
 
         archetype.SetComponent(entity, component);
+        _changeTracker.MarkChanged<T>(entity);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -438,8 +443,126 @@ public sealed class World
         return entities;
     }
 
+    /// <summary>
+    /// Checks if any entity in the chunk has changed components matching the signature.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal bool HasAnyChangedInChunk(Chunk chunk, ComponentSignature changedSignature)
+    {
+        var entities = chunk.GetEntities();
+        for (int i = 0; i < entities.Length; i++)
+        {
+            if (HasAnyChanged(entities[i], changedSignature))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Checks if an entity has any changed components matching the signature.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool HasAnyChanged(Entity entity, ComponentSignature changedSignature)
+    {
+        // For now, use a simplified approach that checks if the entity has any changes
+        // TODO: Optimize this by checking specific component types
+        return _changeTracker.HasChangedAny(entity, changedSignature);
+    }
+
+    /// <summary>
+    /// Advances the change tracker to the next frame.
+    /// Should be called at the end of each update cycle.
+    /// </summary>
+    public void NextFrame()
+    {
+        _changeTracker.NextFrame();
+    }
+
+    /// <summary>
+    /// Performs defragmentation on all archetypes that would benefit from it.
+    /// This consolidates entities from sparse chunks to improve memory utilization.
+    /// </summary>
+    /// <param name="config">Defragmentation configuration</param>
+    /// <returns>Summary of defragmentation results for all archetypes</returns>
+    public DefragmentationSummary DefragmentAllArchetypes(DefragmentationConfig config = default)
+    {
+        if (config.Equals(default))
+            config = DefragmentationConfig.Default;
+
+        var summary = new DefragmentationSummary();
+        var archetypeResults = new List<(ComponentSignature signature, DefragmentationResult result)>();
+
+        foreach (var archetype in _archetypes.Values)
+        {
+            if (ArchetypeDefragmenter.ShouldDefragment(archetype, config))
+            {
+                var result = ArchetypeDefragmenter.Defragment(archetype, config);
+                archetypeResults.Add((archetype.Signature, result));
+
+                summary.TotalEntitiesMoved += result.EntitiesMoved;
+                summary.TotalChunksConsolidated += result.ChunksConsolidated;
+                summary.TotalEmptyChunksRemoved += result.EmptyChunksRemoved;
+                summary.TotalDuration += result.Duration;
+            }
+        }
+
+        summary.ArchetypesProcessed = archetypeResults.Count;
+        summary.Results = archetypeResults.ToArray();
+
+        return summary;
+    }
+
+    /// <summary>
+    /// Gets utilization statistics for all archetypes in this world.
+    /// </summary>
+    /// <param name="config">Configuration for determining defragmentation thresholds</param>
+    /// <returns>Dictionary mapping archetype signatures to their utilization stats</returns>
+    public Dictionary<ComponentSignature, ArchetypeUtilizationStats> GetArchetypeUtilizationStats(DefragmentationConfig config = default)
+    {
+        if (config.Equals(default))
+            config = DefragmentationConfig.Default;
+
+        return ArchetypeDefragmenter.GetUtilizationStats(this, config);
+    }
+
     public override string ToString()
     {
         return $"World(entities={EntityCount}, archetypes={ArchetypeCount})";
     }
+}
+
+/// <summary>
+/// Summary of defragmentation results across multiple archetypes.
+/// </summary>
+public struct DefragmentationSummary
+{
+    /// <summary>
+    /// Number of archetypes that were processed for defragmentation.
+    /// </summary>
+    public int ArchetypesProcessed { get; set; }
+
+    /// <summary>
+    /// Total number of entities moved across all archetypes.
+    /// </summary>
+    public int TotalEntitiesMoved { get; set; }
+
+    /// <summary>
+    /// Total number of chunks consolidated across all archetypes.
+    /// </summary>
+    public int TotalChunksConsolidated { get; set; }
+
+    /// <summary>
+    /// Total number of empty chunks removed across all archetypes.
+    /// </summary>
+    public int TotalEmptyChunksRemoved { get; set; }
+
+    /// <summary>
+    /// Total time spent on defragmentation operations.
+    /// </summary>
+    public TimeSpan TotalDuration { get; set; }
+
+    /// <summary>
+    /// Individual results for each archetype that was defragmented.
+    /// </summary>
+    public (ComponentSignature signature, DefragmentationResult result)[] Results { get; set; }
 }

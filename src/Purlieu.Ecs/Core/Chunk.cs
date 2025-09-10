@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Purlieu.Ecs.Core;
 
-public sealed class Chunk
+public sealed class Chunk : IChunkView
 {
     public const int DefaultCapacity = 512;
 
@@ -156,6 +156,12 @@ public sealed class Chunk
 
             _componentArrays[componentType] = new T[Capacity];
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool HasComponent<T>() where T : struct
+    {
+        return Signature.Has<T>();
     }
 
     public override string ToString()

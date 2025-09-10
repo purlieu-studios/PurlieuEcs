@@ -54,6 +54,16 @@ public sealed class ComponentQuery : IQuery
 
     public IEnumerable<IChunkView> Chunks()
     {
+        var querySignature = BuildQuerySignature();
+        
+        var chunks = ChunksInternal().ToList(); // Materialize to allow profiling
+        QueryProfiler.ProfileQuery(querySignature, () => chunks);
+        
+        return chunks;
+    }
+
+    private IEnumerable<IChunkView> ChunksInternal()
+    {
         var archetypes = _world.GetArchetypes();
 
         foreach (var archetype in archetypes)
@@ -118,5 +128,64 @@ public sealed class ComponentQuery : IQuery
             return null;
 
         return new FilteredChunk(chunk, matchingIndices.ToArray(), matchingIndices.Count);
+    }
+
+    /// <summary>
+    /// Builds a human-readable signature for this query for profiling purposes.
+    /// </summary>
+    private string BuildQuerySignature()
+    {
+        var parts = new List<string>();
+
+        // Add With components
+        var withComponents = GetComponentNames(_withSignature);
+        if (withComponents.Count > 0)
+        {
+            parts.Add($"With<{string.Join(",", withComponents)}>");
+        }
+
+        // Add Without components
+        var withoutComponents = GetComponentNames(_withoutSignature);
+        if (withoutComponents.Count > 0)
+        {
+            parts.Add($"Without<{string.Join(",", withoutComponents)}>");
+        }
+
+        // Add Changed components
+        var changedComponents = GetComponentNames(_changedSignature);
+        if (changedComponents.Count > 0)
+        {
+            parts.Add($"Changed<{string.Join(",", changedComponents)}>");
+        }
+
+        // Add Optional components
+        var optionalComponents = GetComponentNames(_optionalSignature);
+        if (optionalComponents.Count > 0)
+        {
+            parts.Add($"Optional<{string.Join(",", optionalComponents)}>");
+        }
+
+        return string.Join(".", parts);
+    }
+
+    /// <summary>
+    /// Gets component type names from a signature for debugging.
+    /// Uses the component registry to get actual type names where possible.
+    /// </summary>
+    private List<string> GetComponentNames(ComponentSignature signature)
+    {
+        var names = new List<string>();
+        
+        for (int i = 0; i < 64; i++)
+        {
+            if (signature.HasComponentId(i))
+            {
+                // Try to get the actual type name from the registry
+                var typeName = ComponentTypeRegistry.GetTypeName(i);
+                names.Add(typeName ?? $"C{i}");
+            }
+        }
+
+        return names;
     }
 }

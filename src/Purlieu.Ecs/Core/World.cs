@@ -525,10 +525,153 @@ public sealed class World
         return ArchetypeDefragmenter.GetUtilizationStats(this, config);
     }
 
+    /// <summary>
+    /// Enables or disables query performance profiling.
+    /// When enabled, all queries will collect utilization and performance statistics.
+    /// </summary>
+    /// <param name="enabled">True to enable profiling, false to disable</param>
+    public void SetQueryProfilingEnabled(bool enabled)
+    {
+        QueryProfiler.Enabled = enabled;
+    }
+
+    /// <summary>
+    /// Gets whether query profiling is currently enabled.
+    /// </summary>
+    public bool IsQueryProfilingEnabled => QueryProfiler.Enabled;
+
+    /// <summary>
+    /// Gets aggregated statistics for a specific query signature.
+    /// </summary>
+    /// <param name="querySignature">The query signature to analyze</param>
+    /// <returns>Aggregated statistics or null if no data exists</returns>
+    public QueryAggregateStats? GetQueryStats(string querySignature)
+    {
+        return QueryProfiler.GetAggregateStats(querySignature);
+    }
+
+    /// <summary>
+    /// Gets all query signatures that have been profiled.
+    /// </summary>
+    /// <returns>List of profiled query signatures</returns>
+    public IReadOnlyList<string> GetProfiledQueries()
+    {
+        return QueryProfiler.GetProfiledQueries();
+    }
+
+    /// <summary>
+    /// Gets the most recent execution statistics for a query.
+    /// </summary>
+    /// <param name="querySignature">Query signature to look up</param>
+    /// <returns>Most recent stats or null if no data exists</returns>
+    public QueryExecutionStats? GetRecentQueryStats(string querySignature)
+    {
+        return QueryProfiler.GetRecentStats(querySignature);
+    }
+
+    /// <summary>
+    /// Clears all recorded query profiling data.
+    /// </summary>
+    public void ClearQueryProfilingData()
+    {
+        QueryProfiler.ClearStats();
+    }
+
+    /// <summary>
+    /// Gets a summary of query performance across all profiled queries.
+    /// Useful for identifying performance bottlenecks and optimization opportunities.
+    /// </summary>
+    /// <returns>Summary of all query performance data</returns>
+    public QueryPerformanceSummary GetQueryPerformanceSummary()
+    {
+        var queries = GetProfiledQueries();
+        var summary = new QueryPerformanceSummary();
+
+        foreach (var querySignature in queries)
+        {
+            var stats = GetQueryStats(querySignature);
+            if (stats.HasValue)
+            {
+                var s = stats.Value;
+                summary.TotalQueries++;
+                summary.TotalExecutions += s.ExecutionCount;
+                summary.AverageExecutionTime += s.AverageExecutionTime;
+                summary.AverageUtilization += s.AverageUtilization;
+                summary.TotalWastedCapacity += s.AverageWastedCapacity * s.ExecutionCount;
+
+                if (s.AverageUtilization < 0.5f)
+                {
+                    summary.LowUtilizationQueries++;
+                }
+
+                if (s.AverageSparseChunks > s.AverageChunksProcessed * 0.3f)
+                {
+                    summary.HighFragmentationQueries++;
+                }
+            }
+        }
+
+        if (summary.TotalQueries > 0)
+        {
+            summary.AverageExecutionTime = new TimeSpan(summary.AverageExecutionTime.Ticks / summary.TotalQueries);
+            summary.AverageUtilization /= summary.TotalQueries;
+        }
+
+        return summary;
+    }
+
     public override string ToString()
     {
         return $"World(entities={EntityCount}, archetypes={ArchetypeCount})";
     }
+}
+
+/// <summary>
+/// Summary of query performance across all profiled queries.
+/// </summary>
+public struct QueryPerformanceSummary
+{
+    /// <summary>
+    /// Total number of unique queries that have been profiled.
+    /// </summary>
+    public int TotalQueries { get; set; }
+
+    /// <summary>
+    /// Total number of query executions across all queries.
+    /// </summary>
+    public int TotalExecutions { get; set; }
+
+    /// <summary>
+    /// Average execution time across all queries.
+    /// </summary>
+    public TimeSpan AverageExecutionTime { get; set; }
+
+    /// <summary>
+    /// Average chunk utilization across all queries.
+    /// </summary>
+    public float AverageUtilization { get; set; }
+
+    /// <summary>
+    /// Total wasted capacity across all queries.
+    /// </summary>
+    public float TotalWastedCapacity { get; set; }
+
+    /// <summary>
+    /// Number of queries with consistently low utilization (below 50%).
+    /// </summary>
+    public int LowUtilizationQueries { get; set; }
+
+    /// <summary>
+    /// Number of queries that frequently encounter fragmented chunks.
+    /// </summary>
+    public int HighFragmentationQueries { get; set; }
+
+    /// <summary>
+    /// Overall system efficiency score (0.0 to 1.0).
+    /// </summary>
+    public float EfficiencyScore => TotalQueries > 0 
+        ? AverageUtilization * 0.6f + (1.0f - LowUtilizationQueries / (float)TotalQueries) * 0.4f
+        : 1.0f;
 }
 
 /// <summary>

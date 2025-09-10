@@ -11,6 +11,7 @@ public interface IChunkView
 {
     ComponentSignature Signature { get; }
     int Count { get; }
+    int Capacity { get; }
 
     Span<Entity> GetEntities();
     Entity GetEntity(int index);

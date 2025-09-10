@@ -23,6 +23,7 @@ public sealed class FilteredChunk : IChunkView
 
     public ComponentSignature Signature => _sourceChunk.Signature;
     public int Count => _count;
+    public int Capacity => _sourceChunk.Capacity;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Span<Entity> GetEntities()

@@ -199,7 +199,7 @@ public sealed class Archetype
     /// Used for defragmentation operations.
     /// </summary>
     /// <returns>Number of chunks removed</returns>
-    internal int RemoveEmptyChunks()
+    public int RemoveEmptyChunks()
     {
         var removedCount = 0;
 

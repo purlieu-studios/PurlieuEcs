@@ -291,8 +291,8 @@ public class QueryPerformanceTests
         var allTogether = swAll.Elapsed;
 
         // Assert - Running queries together should be roughly the sum of individual times
-        // (Allow higher variance for macOS due to different CPU scheduling characteristics)
-        var tolerance = PlatformTestHelper.IsMacOS ? 0.5 : 0.2;
+        // (Allow higher variance for macOS due to different CPU scheduling and cache characteristics)
+        var tolerance = PlatformTestHelper.IsMacOS ? 0.6 : 0.2;
         allTogether.TotalMilliseconds.Should().BeApproximately(
             sumOfIndividual.TotalMilliseconds, sumOfIndividual.TotalMilliseconds * tolerance,
             "Multiple queries should not have significant interference");

@@ -358,7 +358,7 @@ public class QueryPerformanceTests
         }
         else if (PlatformTestHelper.IsCI && PlatformTestHelper.IsLinux)
         {
-            minimumThroughput = (long)(minimumThroughput * 0.4); // CI environments have variable performance, use 40% of base
+            minimumThroughput = (int)(minimumThroughput * 0.4); // CI environments have variable performance, use 40% of base
         }
 
         throughput.Should().BeGreaterThan(minimumThroughput,

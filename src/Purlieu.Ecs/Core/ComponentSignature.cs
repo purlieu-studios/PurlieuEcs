@@ -182,6 +182,7 @@ public static class ComponentTypeId<T> where T : struct
 public static class ComponentTypeRegistry
 {
     private static readonly Dictionary<Type, int> _typeToId = new();
+    private static readonly Dictionary<int, Type> _idToType = new();
     private static readonly Dictionary<int, Action<Entity, Archetype, Archetype>> _copyDelegates = new();
     private static int _nextId = 0;
     private static int _version = 0;
@@ -200,6 +201,7 @@ public static class ComponentTypeRegistry
 
         var newId = _nextId++;
         _typeToId[type] = newId;
+        _idToType[newId] = type;
 
         // Register copy delegate for this component type
         RegisterCopyDelegate<T>(newId);
@@ -225,6 +227,7 @@ public static class ComponentTypeRegistry
 
         var newId = _nextId++;
         _typeToId[componentType] = newId;
+        _idToType[newId] = componentType;
         return newId;
     }
 
@@ -252,9 +255,34 @@ public static class ComponentTypeRegistry
         }
     }
 
+    /// <summary>
+    /// Gets the type name for a component ID, if known.
+    /// </summary>
+    /// <param name="componentId">Component ID to look up</param>
+    /// <returns>Type name or null if not found</returns>
+    public static string? GetTypeName(int componentId)
+    {
+        if (_idToType.TryGetValue(componentId, out var type))
+        {
+            return type.Name;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the Type for a component ID, if known.
+    /// </summary>
+    /// <param name="componentId">Component ID to look up</param>
+    /// <returns>Type or null if not found</returns>
+    public static Type? GetType(int componentId)
+    {
+        return _idToType.TryGetValue(componentId, out var type) ? type : null;
+    }
+
     public static void Reset()
     {
         _typeToId.Clear();
+        _idToType.Clear();
         _copyDelegates.Clear();
         _nextId = 0;
         _version++;

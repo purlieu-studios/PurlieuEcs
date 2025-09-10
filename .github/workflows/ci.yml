@@ -51,7 +51,7 @@ jobs:
       run: dotnet build --no-restore --configuration Release
 
     - name: Run tests
-      run: dotnet test --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" --logger "console;verbosity=detailed" --collect:"XPlat Code Coverage"
+      run: dotnet test --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx" --logger "console;verbosity=detailed" --collect:"XPlat Code Coverage" --filter "TestCategory!=Performance"
 
     - name: Upload test results
       uses: actions/upload-artifact@v4

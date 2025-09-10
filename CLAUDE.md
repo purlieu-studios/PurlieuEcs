@@ -193,6 +193,39 @@ Example:
 - **Performance**: Any performance implications  
 - **Breaking Changes**: List any API changes  
 
+### Performance Testing Best Practices
+Performance tests are inherently fragile in CI environments due to shared resources, different architectures, and variable performance. Follow these practices:
+
+**Before Writing Performance Tests:**
+1. **Establish CI Baselines First**: Run performance tests in each CI environment (Windows, Linux x86, macOS ARM64) to establish realistic baselines
+2. **Use Platform-Aware Expectations**: Different platforms have different performance characteristics - account for this from the start
+3. **Prefer Relative Measurements**: Compare against previous runs rather than absolute thresholds when possible
+
+**Performance Test Design:**
+- **Entity Count Scaling**: Small entity counts (≤100) have proportionally higher overhead than large counts (≥1000) due to fixed costs
+- **CI-Specific Thresholds**: Use `PlatformTestHelper` to adjust expectations for CI environments vs local development
+- **Allocation Tests**: CI environments typically require 150KB-200KB thresholds vs 50KB-100KB locally due to GC behavior differences
+- **Timing Variance**: Allow 20-50% tolerance for timing tests in CI environments due to resource contention
+
+**Avoid Performance Test Anti-Patterns:**
+- ❌ Hard-coded absolute performance thresholds without platform adjustments
+- ❌ Assuming local performance translates directly to CI performance  
+- ❌ Writing performance tests without first measuring CI baseline performance
+- ❌ Using identical thresholds across different entity counts or platforms
+
+**Example Platform-Aware Performance Test:**
+```csharp
+var expectedThroughput = baseExpectation;
+if (PlatformTestHelper.IsMacOS)
+    expectedThroughput *= 0.1f; // macOS ARM64 is consistently slower
+else if (PlatformTestHelper.IsCI && PlatformTestHelper.IsLinux)
+    expectedThroughput *= entityCount switch {
+        <= 100 => 0.13f,    // Small counts have high overhead
+        <= 1000 => 0.4f,    // Medium counts perform better  
+        _ => 0.4f            // Large counts maintain throughput
+    };
+```
+
 ---
 
 ## 🛠 Example – Movement System (BVIP)
